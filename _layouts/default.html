@@ -1,53 +1,152 @@
-<h1 id="header-1">John's Jawn On The Web</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<p style="display:inline;">
-    Thanks for checking out my page! I'm an Engineering Lead at
-    <a target="_blank" rel="noopener noreferrer" href="https://www.zaxisconnector.com" style="display:inline;color:red;">Z-Axis Connector</a>,
-    where I design and build custom hardware, software, firmware, test equipment, and manufacturing systems for
-    <a href="https://en.wikipedia.org/wiki/Elastomeric_connector" style="display:inline;color:red;">elastomeric connectors</a>
-    and electronic interconnect applications.
-</p>
+    <title>John’s Jawn on the Web</title>
 
-<br>
-<br>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<p style="display:inline;">
-    My work sits at the intersection of embedded systems, industrial automation, computer vision, machine control,
-    and production software. I enjoy building real tools that solve real manufacturing problems.
-</p>
+    <style>
+        body {
+            background: #f8fafc;
+        }
+        .hero {
+            padding: 80px 0;
+        }
+        .hero-img {
+            max-width: 100%;
+            border-radius: 12px;
+        }
+        .section {
+            padding: 60px 0;
+        }
+        .card {
+            border-radius: 12px;
+        }
+    </style>
+</head>
 
-<br>
-<br>
+<body>
 
-<p style="display:inline;">
-    I graduated with a Computer Science degree from
-    <a target="_blank" rel="noopener noreferrer" href="https://cis.temple.edu" style="display:inline;color:red;">Temple University</a>
-    in 2022. Cherry on!
-</p>
+<!-- NAV -->
+<nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+        <span class="navbar-brand fw-bold">John’s Jawn</span>
+        <div>
+            <a href="https://github.com/jglatts" class="me-3">GitHub</a>
+            <a href="https://www.linkedin.com/in/john-glatts-b39b6817b">LinkedIn</a>
+        </div>
+    </div>
+</nav>
 
-<br>
-<br>
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center">
 
-<p style="display:inline;">
-    I'm also building
-    <a target="_blank" rel="noopener noreferrer" href="https://ziot-systems.github.io" style="display:inline;color:red;">ZIoT Systems</a>,
-    focused on industrial monitoring, test hardware, traceability, and production data systems.
-</p>
+            <!-- TEXT -->
+            <div class="col-md-6">
+                <h1 class="fw-bold display-5">John’s Jawn on the Web</h1>
+                <p class="text-muted">Engineering • Automation • Manufacturing Systems</p>
 
-<br>
-<br>
+                <p class="mt-4">
+                    I'm an Engineering Lead at 
+                    <a href="https://www.zaxisconnector.com">Z-Axis Connector</a>,
+                    building real hardware, software, and automation systems for manufacturing.
+                </p>
 
-<p style="display:inline;">
-    One of my open-source projects is
-    <a target="_blank" rel="noopener noreferrer" href="https://jglatts.github.io/SerialWedge/" style="display:inline;color:red;">SerialWedge</a>,
-    a Windows utility for capturing serial, RS232, and USB-to-UART device data and sending it into applications like Excel.
-    You can view the code on
-    <a target="_blank" rel="noopener noreferrer" href="https://github.com/jglatts/SerialWedge" style="display:inline;color:red;">GitHub</a>.
-</p>
+                <p>
+                    I design custom test equipment, machine control systems, and production tools —
+                    from firmware to UI to full production deployment.
+                </p>
 
-<br>
-<br>
+                <a href="#projects" class="btn btn-primary mt-3">View Projects</a>
+            </div>
 
-<p style="display:inline;">
-    Check out my projects, links, and engineering work below.
-</p>
+            <!-- IMAGE -->
+            <div class="col-md-6 text-center">
+                <!-- KEEP YOUR IMAGE HERE -->
+                <img src="images/hero.png" class="hero-img" alt="Engineering Work">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="section bg-white">
+    <div class="container">
+
+        <h2 class="fw-bold mb-4">Projects</h2>
+
+        <div class="row g-4">
+
+            <!-- SERIALWEDGE -->
+            <div class="col-md-6">
+                <div class="card p-4 shadow-sm h-100">
+                    <h5 class="fw-bold">SerialWedge</h5>
+                    <p class="text-muted">
+                        Capture serial, RS232, and USB device data directly into applications like Excel.
+                    </p>
+
+                    <p>
+                        Built for industrial tools like gauges, scales, and sensors.
+                        Real-time data viewing and processing.
+                    </p>
+
+                    <a href="https://jglatts.github.io/SerialWedge/" class="btn btn-outline-primary btn-sm">View Project</a>
+                </div>
+            </div>
+
+            <!-- ZIOT -->
+            <div class="col-md-6">
+                <div class="card p-4 shadow-sm h-100">
+                    <h5 class="fw-bold">ZIoT Systems</h5>
+                    <p class="text-muted">
+                        Industrial monitoring, test hardware, and production traceability.
+                    </p>
+
+                    <p>
+                        Devices and software that capture, validate, and log manufacturing data in real time.
+                    </p>
+
+                    <a href="https://ziot-systems.github.io" class="btn btn-outline-primary btn-sm">View Project</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section">
+    <div class="container">
+
+        <h2 class="fw-bold mb-4">About</h2>
+
+        <p>
+            I graduated from :contentReference[oaicite:0]{index=0} with a Computer Science degree.
+        </p>
+
+        <p>
+            My work focuses on solving real manufacturing problems with practical engineering —
+            combining embedded systems, automation, and software into systems that run on real production floors.
+        </p>
+
+        <p>
+            I like building things that actually get used.
+        </p>
+
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="text-center py-4 text-muted">
+    © 2026 John Glatts
+</footer>
+
+</body>
+</html>
