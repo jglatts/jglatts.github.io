@@ -8,83 +8,192 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --terminal: #010409;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --muted: #8b949e;
+            --bright: #f0f6fc;
+            --green: #3fb950;
+            --blue: #58a6ff;
+        }
+
         body {
-            background: #f8fafc;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Consolas, Monaco, "Courier New", monospace;
         }
 
         .page-wrap {
             max-width: 900px;
         }
 
-        .post-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            background: #ffffff;
-            transition: 0.15s ease;
-        }
-
-        .post-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-        }
-
         a {
+            color: var(--blue);
             text-decoration: none;
         }
 
+            a:hover {
+                color: #79c0ff;
+                text-decoration: underline;
+            }
+
+        .top-link {
+            color: var(--muted);
+        }
+
+            .top-link:hover {
+                color: var(--bright);
+            }
+
+        h1, h3, .fw-bold {
+            color: var(--bright);
+        }
+
+        .muted,
+        .text-muted {
+            color: var(--muted) !important;
+        }
+
+        .terminal-box {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 26px;
+            margin-bottom: 30px;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+
+        .prompt {
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+            .prompt::before {
+                content: "$ ";
+                color: var(--green);
+            }
+
+        .post-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 22px;
+            transition: 0.12s ease;
+        }
+
+            .post-card:hover {
+                transform: translateY(-2px);
+                border-color: #3b434d;
+            }
+
         .tag {
-            font-size: 0.8rem;
-            background: #eef2ff;
-            color: #3730a3;
-            padding: 4px 9px;
+            display: inline-block;
+            border: 1px solid var(--border);
+            color: var(--muted);
             border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn {
+            font-family: inherit;
+            border-radius: 6px;
+        }
+
+        .btn-outline-primary {
+            color: var(--blue);
+            border-color: var(--blue);
+        }
+
+            .btn-outline-primary:hover {
+                background: var(--blue);
+                color: var(--bg);
+            }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            margin-top: 40px;
+            color: var(--muted);
         }
     </style>
 </head>
 
 <body>
 
-<div class="container page-wrap py-5">
+    <div class="container page-wrap py-5">
 
-    <div class="mb-5">
-        <a href="/" class="text-muted">&larr; Back to Home</a>
+        <!-- HEADER -->
+        <div class="terminal-box">
 
-        <h1 class="fw-bold mt-4">Technical Blog</h1>
+            <div class="terminal-header">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
 
-        <p class="lead text-muted">
-            Notes I figured I should write down somewhere, but that I don't expect to be of wide interest. 
-            <br>
-            If you find them useful, great!
-        </p>
-    </div>
+            <p class="prompt">cd ~/blog</p>
 
-    <div class="post-card p-4 mb-4">
-        <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
-            <span class="tag">Camera Integration</span>
-            <span class="text-muted small">2026</span>
+            <a href="/" class="top-link">&larr; back</a>
+
+            <h1 class="fw-bold mt-3">Technical Blog</h1>
+
+            <p class="text-muted">
+                Notes I figured I should write down somewhere.
+                <br>
+                If you find them useful, great.
+            </p>
+
         </div>
 
-        <h3 class="fw-bold">
-            <a href="https://jglatts.github.io/machine-vision-lighting-manufacturing">
-                Interfacing with the AmScope MD310C-BS Using toupcam.dll
+        <!-- POSTS -->
+
+        <div class="post-card">
+            <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
+                <span class="tag">Camera Integration</span>
+                <span class="text-muted small">2026</span>
+            </div>
+
+            <h3 class="fw-bold">
+                <a href="https://jglatts.github.io/machine-vision-lighting-manufacturing">
+                    Interfacing with the AmScope MD310C-BS Using toupcam.dll
+                </a>
+            </h3>
+
+            <p class="text-muted mb-3">
+                Practical C# integration using toupcam.dll, wrapper usage, callbacks,
+                and real-time image capture with the MD310C-BS.
+            </p>
+
+            <p class="prompt">open post</p>
+
+            <a href="https://jglatts.github.io/machine-vision-lighting-manufacturing" class="btn btn-outline-primary btn-sm">
+                Read Post
             </a>
-        </h3>
+        </div>
 
-        <p class="text-muted mb-3">
-            A practical C# integration writeup for using toupcam.dll, the Toupcam wrapper, callbacks,
-            and image pulling with the AmScope MD310C-BS camera.
-        </p>
+        <!-- FOOTER -->
+        <footer class="text-center">
+            © 2026 John Glatts
+        </footer>
 
-        <a href="https://jglatts.github.io/machine-vision-lighting-manufacturing" class="btn btn-outline-primary btn-sm">
-            Read Post
-        </a>
     </div>
-
-    <footer class="text-center text-muted mt-5">
-        © 2026 John Glatts
-    </footer>
-
-</div>
 
 </body>
 </html>
