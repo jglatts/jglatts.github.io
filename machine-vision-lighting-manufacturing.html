@@ -48,7 +48,6 @@
     <div class="container py-5">
 
         <h1 class="fw-bold">Interfacing with the AmScope MD310C-BS Using toupcam.dll</h1>
-
         <p class="text-muted">By John Glatts</p>
 
         <p>
@@ -60,37 +59,24 @@
             AmScope describes it as an industrial inspection camera with a standard C-mount lens port and USB connectivity for both power and data.
         </p>
 
-        <p>
-            When I first started working with this camera, I assumed it would behave like a normal webcam.
-            For basic viewing, that may be true. For real software integration, especially in a Windows production tool,
-            the better path is to use the vendor SDK.
-        </p>
-
-        <p>
-            In practice, that means using <code>toupcam.dll</code> with the C# wrapper file, often named
-            <code>toupcam.cs</code> or <code>toupcam_wrapper.cs</code>.
-        </p>
-
         <div class="callout">
             <strong>Main idea:</strong>
-            this is not just an OpenCV webcam problem. The clean integration path is:
+            Basic camera interface workflow.
             <br>
             <code>AmScope Camera → toupcam.dll → Toupcam C# Wrapper → Your Application</code>
         </div>
 
-        <h2>Why Use toupcam.dll?</h2>
+        <h2>The toupcam.dll</h2>
 
         <p>
             The Toupcam SDK gives you direct access to the camera instead of treating it as a generic video device.
             That matters when you want better control over exposure, image format, resolution, callbacks, and frame handling.
         </p>
 
-
         <p>
-            I reached out the vendor to and they send me a ZIP file with the SDK.
+            I reached out to the vendor and they sent me a ZIP file with the SDK.
             The SDK includes native files, and there are a lot of them.
-            The key here is to choose the right ones for your project.
-            <code>More info TBD...</code>
+            The key here is to choose the right ones for your project as there are quite a few options.
         </p>
 
         <p>
@@ -123,19 +109,21 @@
             The first step is to see what cameras are connected.
         </p>
 
-        <pre><code>var devices = Toupcam.EnumV2();
+        <pre><code>
+            var devices = Toupcam.EnumV2();
 
-if (devices.Length == 0)
-{
-    Console.WriteLine("No Toupcam cameras found.");
-    return;
-}
+            if (devices.Length == 0)
+            {
+                Console.WriteLine("No Toupcam cameras found.");
+                return;
+            }
 
-foreach (var device in devices)
-{
-    Console.WriteLine(device.displayname);
-    Console.WriteLine(device.id);
-}</code></pre>
+            foreach (var device in devices)
+            {
+                Console.WriteLine(device.displayname);
+                Console.WriteLine(device.id);
+            }
+        </code></pre>
 
         <p>
             This is useful if you eventually have more than one camera connected. For a single-camera setup,
@@ -144,15 +132,17 @@ foreach (var device in devices)
 
         <h2>Opening the Camera</h2>
 
-        <pre><code>Toupcam cam = Toupcam.OpenByIndex(0);
+        <pre><code>
+            Toupcam cam = Toupcam.OpenByIndex(0);
 
-if (cam == null)
-{
-    Console.WriteLine("Failed to open camera.");
-    return;
-}
+            if (cam == null)
+            {
+                Console.WriteLine("Failed to open camera.");
+                return;
+            }
 
-Console.WriteLine("Camera opened.");</code></pre>
+            Console.WriteLine("Camera opened.");
+        </code></pre>
 
         <p>
             At this point, you have a camera handle managed by the wrapper.
@@ -172,60 +162,48 @@ Console.WriteLine("Camera opened.");</code></pre>
             When that event arrives, you use <code>PullImage</code> to retrieve the frame.
         </p>
 
-        <pre><code>private Toupcam _cam;
-private byte[] _buffer;
+        <pre><code>
+            private Toupcam _cam;
+            private byte[] _buffer;
 
-private void StartCamera()
-{
-    _cam = Toupcam.OpenByIndex(0);
+            private void StartCamera()
+            {
+                _cam = Toupcam.OpenByIndex(0);
 
-    if (_cam == null)
-        throw new Exception("Could not open camera.");
+                if (_cam == null)
+                    throw new Exception("Could not open camera.");
 
-    _buffer = new byte[2048 * 1536 * 3];
+                _buffer = new byte[2048 * 1536 * 3];
 
-    bool started = _cam.StartPullModeWithCallback(OnCameraEvent);
+                bool started = _cam.StartPullModeWithCallback(OnCameraEvent);
 
-    if (!started)
-        throw new Exception("Could not start pull mode. HRESULT: " + _cam.HResult);
-}
+                if (!started)
+                    throw new Exception("Could not start pull mode. HRESULT: " + _cam.HResult);
+            }
 
-private void OnCameraEvent(Toupcam.eEVENT evt)
-{
-    if (evt == Toupcam.eEVENT.EVENT_IMAGE)
-    {
-        uint width;
-        uint height;
+            private void OnCameraEvent(Toupcam.eEVENT evt)
+            {
+                if (evt == Toupcam.eEVENT.EVENT_IMAGE)
+                {
+                    uint width;
+                    uint height;
 
-        bool ok = _cam.PullImage(_buffer, 24, out width, out height);
+                    bool ok = _cam.PullImage(_buffer, 24, out width, out height);
 
-        if (!ok)
-        {
-            Console.WriteLine("PullImage failed. HRESULT: " + _cam.HResult);
-            return;
-        }
+                    if (!ok)
+                    {
+                        Console.WriteLine("PullImage failed. HRESULT: " + _cam.HResult);
+                        return;
+                    }
 
-        Console.WriteLine($"Frame received: {width} x {height}");
+                    Console.WriteLine($"Frame received: {width} x {height}");
 
-        // At this point _buffer contains the image data.
-        // You can copy it into a Bitmap, convert it to an OpenCV Mat,
-        // run measurement code, or save it for debugging.
-    }
-}</code></pre>
-
-        <h2>Important Buffer Note</h2>
-
-        <p>
-            The buffer must be large enough for the selected image size and pixel format.
-            For a 24-bit RGB image, a simple starting point is:
-        </p>
-
-        <pre><code>buffer_size = width * height * 3</code></pre>
-
-        <p>
-            In real code, I prefer to allocate based on the actual selected resolution instead of hardcoding the buffer size.
-            Hardcoding is fine for a quick test, but it becomes fragile once you start changing camera settings.
-        </p>
+                    // At this point _buffer contains the image data.
+                    // You can copy it into a Bitmap, convert it to an OpenCV Mat,
+                    // run measurement code, or save it for debugging.
+                }
+            }
+        </code></pre>
 
         <h2>Converting the Frame for OpenCV</h2>
 
@@ -234,23 +212,23 @@ private void OnCameraEvent(Toupcam.eEVENT evt)
             For machine vision work, I usually want the image in OpenCV.
         </p>
 
-        <pre><code>// Example idea only. Confirm channel order and stride for your camera settings.
-Mat mat = new Mat((int)height, (int)width, MatType.CV_8UC3);
-Marshal.Copy(_buffer, 0, mat.Data, _buffer.Length);</code></pre>
+        <pre><code>
+            // Example idea only. Confirm channel order and stride for your camera settings.
+            Mat mat = new Mat((int)height, (int)width, MatType.CV_8UC3);
+            Marshal.Copy(_buffer, 0, mat.Data, _buffer.Length);
+        </code></pre>
 
         <p>
             From there, the image can go through the normal vision pipeline:
         </p>
-
         <pre><code>Camera Frame → OpenCV Mat → ROI Crop → Edge Detection → Measurement → Pass/Fail</code></pre>
 
-        <h2>Why This Matters for Measurement Systems</h2>
 
+        <h2>Why This Matters for Measurement Systems</h2>
         <p>
             For a measurement system, the camera integration is only one piece of the puzzle.
             The real value comes from repeatability.
         </p>
-
         <ul>
             <li>Use fixed lighting</li>
             <li>Lock focus</li>
@@ -261,7 +239,7 @@ Marshal.Copy(_buffer, 0, mat.Data, _buffer.Length);</code></pre>
         </ul>
 
         <p>
-            The software side needs to be boring and predictable. A callback-based image pipeline is useful because
+            The software side needs to be boring and predictable. A <strong>callback-based</strong> image pipeline is useful because
             the application can react when a real frame is available instead of sleeping, polling, or guessing.
         </p>
 
