@@ -81,12 +81,19 @@
         .prompt {
             color: var(--muted);
             margin-bottom: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
         }
 
             .prompt::before {
-                content: "$ ";
+                content: "PS C:\\> ";
                 color: var(--green);
             }
+
+        .directory-output {
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
 
         .post-card {
             background: var(--panel);
@@ -148,7 +155,13 @@
                 <span class="dot"></span>
             </div>
 
-            <p class="prompt">cd ~/blog</p>
+            <p class="prompt">cd C:\Users\John\Blog</p>
+            <p class="directory-output">Directory: C:\Users\John\Blog</p>
+
+            <p class="prompt">Get-ChildItem</p>
+            <p class="directory-output">md310c-blog.md</p>
+
+            <p class="prompt">notepad .\md310c-blog.md</p>
 
             <a href="/" class="top-link">&larr; back</a>
 
@@ -163,7 +176,6 @@
         </div>
 
         <!-- POSTS -->
-
         <div class="post-card">
             <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
                 <span class="tag">Camera Integration</span>
@@ -181,7 +193,7 @@
                 and real-time image capture with the MD310C-BS.
             </p>
 
-            <p class="prompt">open post</p>
+            <p class="prompt">Start-Process .\md310c-blog.md</p>
 
             <a href="https://jglatts.github.io/machine-vision-lighting-manufacturing" class="btn btn-outline-primary btn-sm">
                 Read Post

@@ -46,24 +46,16 @@
             color: var(--bright);
         }
 
-        h1 {
-            margin-top: 18px;
-        }
-
         h2 {
-            margin-top: 46px;
-            padding-top: 18px;
+            margin-top: 48px;
+            padding-top: 16px;
             border-top: 1px solid var(--border);
         }
 
             h2::before {
-                content: "./";
+                content: "> ";
                 color: var(--green);
             }
-
-        h5 {
-            margin-top: 28px;
-        }
 
         .text-muted {
             color: var(--muted) !important;
@@ -93,10 +85,12 @@
         .prompt {
             color: var(--muted);
             margin-bottom: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
         }
 
             .prompt::before {
-                content: "$ ";
+                content: "PS C:\\> ";
                 color: var(--green);
             }
 
@@ -118,44 +112,22 @@
 
         code {
             color: var(--bright);
-            background: rgba(110, 118, 129, 0.22);
+            background: rgba(110,118,129,0.22);
             padding: 2px 5px;
             border-radius: 4px;
-            font-size: 0.95rem;
         }
 
         pre {
             background: var(--terminal);
-            color: var(--text);
             border: 1px solid var(--border);
             padding: 18px;
             border-radius: 10px;
             overflow-x: auto;
-            margin: 22px 0;
+            margin: 20px 0;
         }
 
             pre code {
                 background: none;
-                padding: 0;
-                color: var(--text);
-            }
-
-        ul {
-            padding-left: 1.3rem;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        .back-link {
-            color: var(--muted);
-            display: inline-block;
-            margin-bottom: 18px;
-        }
-
-            .back-link:hover {
-                color: var(--bright);
             }
 
         footer {
@@ -164,6 +136,14 @@
             margin-top: 40px;
             color: var(--muted);
         }
+
+        .back-link {
+            color: var(--muted);
+        }
+
+            .back-link:hover {
+                color: var(--bright);
+            }
     </style>
 </head>
 
@@ -171,6 +151,7 @@
 
     <div class="container py-5">
 
+        <!-- HEADER -->
         <div class="terminal-box">
             <div class="terminal-header">
                 <span class="dot"></span>
@@ -178,256 +159,99 @@
                 <span class="dot"></span>
             </div>
 
-            <p class="prompt">open posts/amscope-md310c-bs.md</p>
+            <p class="prompt">cd C:\Users\John\Blog\posts</p>
+            <p class="prompt">notepad .\md310c-blog.md</p>
 
-            <a href="/all-blogs.html" class="back-link">&larr; back to blog</a>
+            <a href="/all-blogs.html" class="back-link">&larr; back</a>
 
-            <h1 class="fw-bold">
+            <h1 class="fw-bold mt-3">
                 Interfacing with the AmScope MD310C-BS Using toupcam.dll
             </h1>
 
             <p class="text-muted mb-0">By John Glatts</p>
         </div>
 
+        <!-- ARTICLE -->
         <article class="article-card">
 
             <p>
                 The
-                <a href="https://amscope.com/products/md310c-bs" target="_blank" rel="noopener noreferrer">
+                <a href="https://amscope.com/products/md310c-bs" target="_blank">
                     AmScope MD310C-BS
                 </a>
-                is a compact 3.1MP USB 2.0 C-mount microscope camera designed for inspection and measurement work.
-                AmScope describes it as an industrial inspection camera with a standard C-mount lens port and USB connectivity for both power and data.
+                is a compact 3.1MP USB camera used for inspection and measurement systems.
             </p>
 
             <div class="callout">
-                <p class="prompt mb-2">camera_stack</p>
-                <strong>Main idea:</strong>
-                Basic camera interface workflow.
-                <br>
-                <code>AmScope Camera → toupcam.dll → Toupcam C# Wrapper → Your Application</code>
+                <p class="prompt">Write-Output camera_stack</p>
+                <code>Camera → toupcam.dll → C# Wrapper → Your App</code>
             </div>
 
-            <h2>The toupcam.dll</h2>
+            <h2>toupcam.dll</h2>
 
             <p>
-                The Toupcam SDK gives you direct access to the camera instead of treating it as a generic video device.
-                That matters when you want better control over exposure, image format, resolution, callbacks, and frame handling.
-            </p>
-
-            <p>
-                I reached out to the vendor and they sent me a ZIP file with the SDK.
-                The SDK includes native files, and there are a lot of them.
-                The key here is to choose the right ones for your project as there are quite a few options.
-            </p>
-
-            <p>
-                The wrapper I used states that it calls into the native <code>toupcam.dll</code> API through P/Invoke.
-                The C# <code>Toupcam</code> class is a thin wrapper around the native API, so the SDK documentation still applies.
+                The SDK gives direct access to the camera — exposure, resolution, callbacks — not just a generic webcam feed.
             </p>
 
             <h2>Project Setup</h2>
 
-            <p>For a C# Windows application, the basic setup looks like this:</p>
-
             <ul>
-                <li>Add <code>toupcam_wrapper.cs</code> or <code>toupcam.cs</code> to your project</li>
-                <li>Place <code>toupcam.dll</code> next to your compiled <code>.exe</code></li>
-                <li>Make sure your project platform matches the DLL, either x86 or x64</li>
-                <li>Use the <code>Toupcam</code> class from the wrapper to enumerate, open, and stream from the camera</li>
+                <li>Add <code>toupcam.cs</code></li>
+                <li>Copy <code>toupcam.dll</code> next to your .exe</li>
+                <li>Match x86/x64</li>
+                <li>Use wrapper API</li>
             </ul>
-
-            <p>
-                The wrapper exposes methods such as <code>EnumV2()</code>, <code>Open()</code>, and <code>OpenByIndex()</code>
-                for finding and opening cameras. The comments in the wrapper also note that the camera object should be created
-                through <code>Open</code> or <code>OpenByIndex</code>, not by directly calling the constructor.
-            </p>
 
             <h2>Enumerating Cameras</h2>
 
-            <p>The first step is to see what cameras are connected.</p>
+            <p class="prompt">type .\enumerate.cs</p>
 
 <pre><code>var devices = Toupcam.EnumV2();
+</code></pre>
 
-if (devices.Length == 0)
-{
-    Console.WriteLine("No Toupcam cameras found.");
-    return;
-}
+            <h2>Opening Camera</h2>
 
-foreach (var device in devices)
-{
-    Console.WriteLine(device.displayname);
-    Console.WriteLine(device.id);
-}</code></pre>
-
-            <p>
-                This is useful if you eventually have more than one camera connected.
-                For a single-camera setup, opening by index is usually enough.
-            </p>
-
-            <h2>Opening the Camera</h2>
+            <p class="prompt">type .\open.cs</p>
 
 <pre><code>Toupcam cam = Toupcam.OpenByIndex(0);
+</code></pre>
 
-if (cam == null)
-{
-    Console.WriteLine("Failed to open camera.");
-    return;
-}
+            <h2>Pull Mode + Callback</h2>
 
-Console.WriteLine("Camera opened.");</code></pre>
+            <p class="prompt">type .\callback.cs</p>
 
-            <p>
-                At this point, you have a camera handle managed by the wrapper.
-                The wrapper also exposes <code>HResult</code>, which is useful when debugging failed SDK calls.
-            </p>
+<pre><code>_cam.StartPullModeWithCallback(OnCameraEvent);
+</code></pre>
 
-            <h2>Using Pull Mode with a Callback</h2>
+            <h2>OpenCV Pipeline</h2>
 
-            <p>
-                One of the most useful integration patterns is pull mode with a callback.
-                The SDK notifies your application when an image is ready, and then your code calls <code>PullImage</code>
-                to copy the frame into your own buffer.
-            </p>
+            <p class="prompt">Write-Output pipeline</p>
 
-            <p>
-                In the wrapper, the event enum includes <code>EVENT_IMAGE</code>, described as a live image event.
-                When that event arrives, you use <code>PullImage</code> to retrieve the frame.
-            </p>
+<pre><code>Camera → OpenCV → ROI → Edge → Measure → Pass/Fail
+</code></pre>
 
-<pre><code>private Toupcam _cam;
-private byte[] _buffer;
-
-private void StartCamera()
-{
-    _cam = Toupcam.OpenByIndex(0);
-
-    if (_cam == null)
-        throw new Exception("Could not open camera.");
-
-    _buffer = new byte[2048 * 1536 * 3];
-
-    bool started = _cam.StartPullModeWithCallback(OnCameraEvent);
-
-    if (!started)
-        throw new Exception("Could not start pull mode. HRESULT: " + _cam.HResult);
-}
-
-private void OnCameraEvent(Toupcam.eEVENT evt)
-{
-    if (evt == Toupcam.eEVENT.EVENT_IMAGE)
-    {
-        uint width;
-        uint height;
-
-        bool ok = _cam.PullImage(_buffer, 24, out width, out height);
-
-        if (!ok)
-        {
-            Console.WriteLine("PullImage failed. HRESULT: " + _cam.HResult);
-            return;
-        }
-
-        Console.WriteLine($"Frame received: {width} x {height}");
-
-        // At this point _buffer contains the image data.
-        // You can copy it into a Bitmap, convert it to an OpenCV Mat,
-        // run measurement code, or save it for debugging.
-    }
-}</code></pre>
-
-            <h2>Converting the Frame for OpenCV</h2>
-
-            <p>
-                Once the frame is in a byte array, you can convert it into whatever your application uses.
-                For machine vision work, I usually want the image in OpenCV.
-            </p>
-
-<pre><code>// Example idea only. Confirm channel order and stride for your camera settings.
-Mat mat = new Mat((int)height, (int)width, MatType.CV_8UC3);
-Marshal.Copy(_buffer, 0, mat.Data, _buffer.Length);</code></pre>
-
-            <p>From there, the image can go through the normal vision pipeline:</p>
-
-<pre><code>Camera Frame → OpenCV Mat → ROI Crop → Edge Detection → Measurement → Pass/Fail</code></pre>
-
-            <h2>Why This Matters for Measurement Systems</h2>
-
-            <p>
-                For a measurement system, the camera integration is only one piece of the puzzle.
-                The real value comes from repeatability.
-            </p>
+            <h2>Why It Matters</h2>
 
             <ul>
-                <li>Use fixed lighting</li>
-                <li>Lock focus</li>
-                <li>Lock exposure when possible</li>
-                <li>Mount the camera rigidly</li>
-                <li>Calibrate pixels to real units</li>
-                <li>Save failed images for debugging</li>
+                <li>Fixed lighting</li>
+                <li>Locked exposure</li>
+                <li>Rigid mounting</li>
+                <li>Calibration</li>
             </ul>
-
-            <p>
-                The software side needs to be boring and predictable.
-                A <strong>callback-based</strong> image pipeline is useful because the application can react when a real frame is available
-                instead of sleeping, polling, or guessing.
-            </p>
 
             <h2>Common Issues</h2>
 
-            <h5>DLL Not Found</h5>
-
-            <p>
-                Make sure <code>toupcam.dll</code> is copied to the same folder as your executable.
-                Also check that your application platform matches the DLL architecture.
-            </p>
-
-            <h5>Camera Opens in Vendor Software but Not Your App</h5>
-
-            <p>
-                Close the vendor software before running your application.
-                Only one process may be able to control the camera at a time.
-            </p>
-
-            <h5>Callback Fires but PullImage Fails</h5>
-
-            <p>
-                Check the buffer size, bit depth, and image format.
-                Also inspect <code>cam.HResult</code> after the failed call.
-            </p>
-
-            <h5>Image Looks Flipped or Rotated</h5>
-
-            <p>
-                The SDK exposes camera options for orientation and image processing.
-                Depending on your optical setup, you may need to flip or rotate in software.
-            </p>
-
-            <h2>Python Reference</h2>
-
-            <p>
-                There is also a Python project called
-                <a href="https://github.com/NMGRL/toupcam" target="_blank" rel="noopener noreferrer">
-                    NMGRL/toupcam
-                </a>
-                that provides a Python interface to ToupCam cameras.
-                I still prefer the C# wrapper for Windows production tools, but the Python project is useful as a reference
-                if you want to understand the SDK flow from another language.
-            </p>
+            <p><strong>DLL not found</strong> → copy next to exe</p>
+            <p><strong>Camera locked</strong> → close vendor app</p>
+            <p><strong>PullImage fails</strong> → check buffer/format</p>
 
             <h2>Final Thoughts</h2>
 
             <p>
-                The AmScope MD310C-BS is a useful low-cost camera for custom inspection and measurement systems.
-                The important lesson is that serious integration should go through <code>toupcam.dll</code>,
-                not just a generic webcam interface.
+                Once you can enumerate, open, and pull frames — you have the foundation for a real system.
             </p>
 
-            <p>
-                Once you can reliably enumerate the camera, open it, receive frame events, and pull image buffers,
-                you have the foundation for a real machine vision system.
-            </p>
+            <p class="prompt">exit</p>
 
         </article>
 

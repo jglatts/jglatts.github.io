@@ -6,7 +6,6 @@
 
     <title>John’s Jawn on the Web</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
@@ -47,7 +46,8 @@
             padding-bottom: 18px;
         }
 
-        .brand {
+        .brand,
+        h1, h4, h5, .fw-bold {
             color: var(--bright);
         }
 
@@ -60,12 +60,21 @@
             padding: 70px 0 38px;
         }
 
-        .terminal-box {
-            background: var(--terminal);
+        .terminal-box,
+        .terminal-card {
             border: 1px solid var(--border);
             border-radius: 12px;
+        }
+
+        .terminal-box {
+            background: var(--terminal);
             padding: 28px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .terminal-card {
+            background: var(--panel);
+            padding: 26px;
         }
 
         .terminal-header {
@@ -84,16 +93,14 @@
         .prompt {
             color: var(--muted);
             margin-bottom: 8px;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
         }
 
             .prompt::before {
-                content: "$ ";
+                content: "PS C:\\> ";
                 color: var(--green);
             }
-
-        h1, h4, h5, .fw-bold {
-            color: var(--bright);
-        }
 
         .muted,
         .text-muted {
@@ -116,15 +123,8 @@
             padding: 34px 0;
         }
 
-        .terminal-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 26px;
-        }
-
         .section-title::before {
-            content: "./";
+            content: "> ";
             color: var(--green);
         }
 
@@ -195,9 +195,8 @@
 
     <div class="container page">
 
-        <!-- TOP LINKS -->
         <div class="top-bar d-flex justify-content-between align-items-center mt-4 mb-4 flex-wrap">
-            <div class="brand fw-bold">johns-jawn@web</div>
+            <div class="brand fw-bold">johns-jawn.exe</div>
 
             <div class="links">
                 <a href="https://ziot-systems.github.io" target="_blank">ZIoT</a>
@@ -208,7 +207,6 @@
             </div>
         </div>
 
-        <!-- HERO -->
         <section class="hero">
             <div class="terminal-box">
                 <div class="terminal-header">
@@ -216,73 +214,83 @@
                     <span class="dot"></span>
                     <span class="dot"></span>
                 </div>
+
                 <p class="prompt">whoami</p>
-                <h1 class="fw-bold display-5 mb-3 cursor">
-                    John Glatts
-                </h1>
-                <p class="muted mb-1">
-                    Engineering Lead
-                </p>
-                <p class="muted mb-4">
-                    Software • Firmware • Automation • Manufacturing Systems
-                </p>
+
+                <h1 class="fw-bold display-5 mb-3 cursor">John Glatts</h1>
+
+                <p class="muted mb-1">Engineering Lead</p>
+                <p class="muted mb-4">Software • Firmware • Automation • Manufacturing Systems</p>
+
+                <p class="prompt">Get-Content .\about.txt</p>
+
                 <p>
                     I'm an Engineering Lead at
-                    <a href="https://www.zaxisconnector.com" target="_blank">
-                        Z-Axis Connector Company
-                    </a>.
+                    <a href="https://www.zaxisconnector.com" target="_blank">Z-Axis Connector Company</a>.
                     I design and build hardware, software, and automation systems used in PCB interconnects and manufacturing.
                 </p>
+
                 <p>
                     I work directly with customers to define requirements and deliver engineered solutions,
                     while driving growth through technical marketing and product positioning.
                 </p>
+
                 <div class="mt-4">
                     <span class="tag">C#</span>
+                    <span class="tag">WinForms</span>
                     <span class="tag">Firmware</span>
+                    <span class="tag">DLL Wrangling</span>
                     <span class="tag">Machine Vision</span>
                     <span class="tag">Industrial Automation</span>
-                    <span class="tag">Manufacturing Systems</span>
                 </div>
             </div>
         </section>
 
-        <!-- STARTUP -->
         <section class="section">
             <h4 class="section-title fw-bold mb-3">startup</h4>
+
             <div class="terminal-card">
-                <p class="prompt">cat ziot-systems.txt</p>
+                <p class="prompt">type .\ziot-systems.txt</p>
+
                 <h5 class="fw-bold">ZIoT Systems</h5>
+
                 <p class="muted">
                     Industrial monitoring, test hardware, and production traceability.
                 </p>
+
                 <p>
                     ZIoT Systems is my startup focused on building devices and software that capture,
                     validate, and track manufacturing data in real time.
                 </p>
+
                 <a href="https://ziot-systems.github.io" target="_blank" class="btn btn-outline-primary btn-sm">
                     Visit ZIoT Systems
                 </a>
             </div>
         </section>
 
-        <!-- PROJECTS -->
         <section class="section">
             <h4 class="section-title fw-bold mb-3">projects</h4>
+
             <div class="terminal-card">
-                <p class="prompt">open SerialWedge</p>
+                <p class="prompt">Start-Process .\SerialWedge.exe</p>
+
                 <h5 class="fw-bold">SerialWedge</h5>
+
                 <p class="muted">
                     Serial, RS232, and USB data capture tool.
                 </p>
+
                 <p>
                     A Windows utility that captures data from industrial devices such as gauges,
                     scales, meters, and sensors, then sends it into applications like Excel.
                 </p>
+
                 <div class="mt-3">
                     <a href="https://jglatts.github.io/SerialWedge/" target="_blank" class="btn btn-outline-primary btn-sm me-2">
                         View Project
                     </a>
+
                     <a href="https://github.com/jglatts/SerialWedge" target="_blank" class="btn btn-outline-secondary btn-sm">
                         GitHub
                     </a>
@@ -290,16 +298,18 @@
             </div>
         </section>
 
-        <!-- ABOUT -->
         <section class="section">
             <h4 class="section-title fw-bold mb-3">about</h4>
+
             <div class="terminal-card">
-                <p class="prompt">cat about.md</p>
+                <p class="prompt">Get-Content .\education.txt</p>
+
                 <p>
                     I graduated from
                     <a href="https://www.temple.edu" target="_blank">Temple University</a>
                     with a Computer Science degree.
                 </p>
+
                 <p>
                     I enjoy building practical systems that run in production environments.
                     I care about reliability, usability, and solving real engineering problems.
@@ -307,7 +317,6 @@
             </div>
         </section>
 
-        <!-- FOOTER -->
         <footer class="text-center">
             © 2026 John Glatts
         </footer>
