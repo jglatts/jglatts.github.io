@@ -245,28 +245,28 @@
 
         <h2>Common Issues</h2>
 
-        <h3>DLL Not Found</h3>
+        <h5>DLL Not Found</h5>
 
         <p>
             Make sure <code>toupcam.dll</code> is copied to the same folder as your executable.
             Also check that your application platform matches the DLL architecture.
         </p>
 
-        <h3>Camera Opens in Vendor Software but Not Your App</h3>
+        <h5>Camera Opens in Vendor Software but Not Your App</h5>
 
         <p>
             Close the vendor software before running your application.
             Only one process may be able to control the camera at a time.
         </p>
 
-        <h3>Callback Fires but PullImage Fails</h3>
+        <h5>Callback Fires but PullImage Fails</h5>
 
         <p>
             Check the buffer size, bit depth, and image format.
             Also inspect <code>cam.HResult</code> after the failed call.
         </p>
 
-        <h3>Image Looks Flipped or Rotated</h3>
+        <h5>Image Looks Flipped or Rotated</h5>
 
         <p>
             The SDK exposes camera options for orientation and image processing.
