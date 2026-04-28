@@ -14,14 +14,13 @@
             background: #f8fafc;
         }
         .hero {
-            padding: 80px 0;
-        }
-        .hero-img {
-            max-width: 100%;
-            border-radius: 12px;
+            padding: 80px 0 40px 0;
         }
         .section {
-            padding: 60px 0;
+            padding: 50px 0;
+        }
+        .card {
+            border-radius: 12px;
         }
         .links a {
             margin-right: 12px;
@@ -34,7 +33,7 @@
 
 <div class="container">
 
-    <!-- HEADER LINKS -->
+    <!-- TOP LINKS -->
     <div class="d-flex justify-content-between align-items-center mt-4 mb-4 flex-wrap">
         <div class="fw-bold">John Glatts</div>
 
@@ -47,58 +46,54 @@
     </div>
 
     <!-- HERO -->
-    <section class="hero">
-        <div class="row align-items-center">
-
-            <!-- TEXT -->
-            <div class="col-md-6">
-                <h1 class="fw-bold display-5">John’s Jawn on the Web</h1>
-                <p class="text-muted">Engineering Lead • Automation • Manufacturing Systems</p>
-
-                <p class="mt-4">
-                    I'm an Engineering Lead at 
-                    <a href="https://www.zaxisconnector.com" target="_blank">Z-Axis Connector</a>,
-                    where I design and build real-world hardware, software, and automation systems for manufacturing.
-                </p>
-
-                <p>
-                    My work spans embedded systems, machine control, computer vision, and production software —
-                    all focused on solving practical problems on real factory floors.
-                </p>
-            </div>
-
-            <!-- IMAGE -->
-            <div class="col-md-6 text-center">
-                <!-- KEEP YOUR IMAGE -->
-                <img src="images/hero.png" class="hero-img" alt="Engineering Work">
-            </div>
-
-        </div>
-    </section>
-
-    <!-- STARTUP -->
-    <section class="section bg-white rounded shadow-sm p-4 mb-4">
-        <h4 class="fw-bold">ZIoT Systems</h4>
+    <section class="hero text-center">
+        <h1 class="fw-bold display-5">John’s Jawn on the Web</h1>
 
         <p class="text-muted">
-            Industrial monitoring, test hardware, and production traceability.
+            Engineering Lead • Automation • Manufacturing Systems
+        </p>
+
+        <p class="mt-4">
+            I am an Engineering Lead at 
+            <a href="https://www.zaxisconnector.com" target="_blank">Z-Axis Connector</a>.
+            I design and build hardware, software, and automation systems used in manufacturing.
         </p>
 
         <p>
-            ZIoT Systems is my startup focused on building production-ready devices and software
-            that capture, validate, and track manufacturing data in real time.
+            My work includes embedded systems, machine control, computer vision, and production tools.
+            I focus on solving real problems on real factory floors.
         </p>
 
-        <a href="https://ziot-systems.github.io" target="_blank" class="btn btn-outline-primary btn-sm">
-            Check it out
-        </a>
+        <p>
+            <b>Building systems that actually get used.</b>
+        </p>
     </section>
 
-    <!-- PROJECT -->
+    <!-- STARTUP -->
+    <section class="section">
+        <div class="card p-4 shadow-sm">
+            <h4 class="fw-bold">ZIoT Systems</h4>
+
+            <p class="text-muted">
+                Industrial monitoring, test hardware, and production traceability
+            </p>
+
+            <p>
+                ZIoT Systems is my startup focused on building devices and software that capture,
+                validate, and track manufacturing data in real time.
+            </p>
+
+            <a href="https://ziot-systems.github.io" target="_blank" class="btn btn-outline-primary btn-sm">
+                Visit ZIoT Systems
+            </a>
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
     <section class="section">
         <h4 class="fw-bold mb-4">Projects</h4>
 
-        <div class="bg-white rounded shadow-sm p-4">
+        <div class="card p-4 shadow-sm">
             <h5 class="fw-bold">SerialWedge</h5>
 
             <p class="text-muted">
@@ -106,32 +101,35 @@
             </p>
 
             <p>
-                A Windows utility that captures data from industrial devices like gauges, scales,
-                and sensors, and sends it directly into applications like Excel.
+                A Windows utility that captures data from industrial devices such as gauges, scales,
+                and sensors, and sends it into applications like Excel.
             </p>
 
-            <a href="https://jglatts.github.io/SerialWedge/" target="_blank" class="btn btn-outline-primary btn-sm">
-                View Project
-            </a>
+            <div class="mt-3">
+                <a href="https://jglatts.github.io/SerialWedge/" target="_blank" class="btn btn-outline-primary btn-sm me-2">
+                    View Project
+                </a>
 
-            <a href="https://github.com/jglatts/SerialWedge" target="_blank" class="btn btn-outline-secondary btn-sm">
-                GitHub
-            </a>
+                <a href="https://github.com/jglatts/SerialWedge" target="_blank" class="btn btn-outline-secondary btn-sm">
+                    GitHub
+                </a>
+            </div>
         </div>
     </section>
 
     <!-- ABOUT -->
     <section class="section">
-        <h4 class="fw-bold mb-4">About</h4>
+        <h4 class="fw-bold mb-3">About</h4>
 
         <p>
-    I graduated from <a href="https://www.temple.edu" target="_blank">Temple University</a>
-    with a Computer Science degree, where I developed a strong foundation in systems, software, and problem solving.
-    </p>
+            I graduated from 
+            <a href="https://www.temple.edu" target="_blank">Temple University</a>
+            with a Computer Science degree.
+        </p>
 
         <p>
-            I like building systems that actually get used — not just prototypes, but tools that run in production
-            and solve real engineering problems.
+            I enjoy building practical systems that run in production environments.
+            I care about reliability, usability, and solving real engineering problems.
         </p>
     </section>
 
