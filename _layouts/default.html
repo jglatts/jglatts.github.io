@@ -23,130 +23,124 @@
         .section {
             padding: 60px 0;
         }
-        .card {
-            border-radius: 12px;
+        .links a {
+            margin-right: 12px;
+            text-decoration: none;
         }
     </style>
 </head>
 
 <body>
 
-<!-- NAV -->
-<nav class="navbar navbar-light bg-white shadow-sm">
-    <div class="container">
-        <span class="navbar-brand fw-bold">John’s Jawn</span>
-        <div>
-            <a href="https://github.com/jglatts" class="me-3">GitHub</a>
-            <a href="https://www.linkedin.com/in/john-glatts-b39b6817b">LinkedIn</a>
+<div class="container">
+
+    <!-- HEADER LINKS -->
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4 flex-wrap">
+        <div class="fw-bold">John Glatts</div>
+
+        <div class="links">
+            <a href="https://ziot-systems.github.io" target="_blank">ZIoT Systems</a>
+            <a href="https://github.com/jglatts" target="_blank">GitHub</a>
+            <a href="https://www.linkedin.com/in/john-glatts-b39b6817b" target="_blank">LinkedIn</a>
+            <a href="https://www.instagram.com/jdglatts/?hl=en" target="_blank">Instagram</a>
         </div>
     </div>
-</nav>
 
-<!-- HERO -->
-<section class="hero">
-    <div class="container">
+    <!-- HERO -->
+    <section class="hero">
         <div class="row align-items-center">
 
             <!-- TEXT -->
             <div class="col-md-6">
                 <h1 class="fw-bold display-5">John’s Jawn on the Web</h1>
-                <p class="text-muted">Engineering • Automation • Manufacturing Systems</p>
+                <p class="text-muted">Engineering Lead • Automation • Manufacturing Systems</p>
 
                 <p class="mt-4">
                     I'm an Engineering Lead at 
-                    <a href="https://www.zaxisconnector.com">Z-Axis Connector</a>,
-                    building real hardware, software, and automation systems for manufacturing.
+                    <a href="https://www.zaxisconnector.com" target="_blank">Z-Axis Connector</a>,
+                    where I design and build real-world hardware, software, and automation systems for manufacturing.
                 </p>
 
                 <p>
-                    I design custom test equipment, machine control systems, and production tools —
-                    from firmware to UI to full production deployment.
+                    My work spans embedded systems, machine control, computer vision, and production software —
+                    all focused on solving practical problems on real factory floors.
                 </p>
-
-                <a href="#projects" class="btn btn-primary mt-3">View Projects</a>
             </div>
 
             <!-- IMAGE -->
             <div class="col-md-6 text-center">
-                <!-- KEEP YOUR IMAGE HERE -->
+                <!-- KEEP YOUR IMAGE -->
                 <img src="images/hero.png" class="hero-img" alt="Engineering Work">
             </div>
 
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- PROJECTS -->
-<section id="projects" class="section bg-white">
-    <div class="container">
+    <!-- STARTUP -->
+    <section class="section bg-white rounded shadow-sm p-4 mb-4">
+        <h4 class="fw-bold">ZIoT Systems</h4>
 
-        <h2 class="fw-bold mb-4">Projects</h2>
+        <p class="text-muted">
+            Industrial monitoring, test hardware, and production traceability.
+        </p>
 
-        <div class="row g-4">
+        <p>
+            ZIoT Systems is my startup focused on building production-ready devices and software
+            that capture, validate, and track manufacturing data in real time.
+        </p>
 
-            <!-- SERIALWEDGE -->
-            <div class="col-md-6">
-                <div class="card p-4 shadow-sm h-100">
-                    <h5 class="fw-bold">SerialWedge</h5>
-                    <p class="text-muted">
-                        Capture serial, RS232, and USB device data directly into applications like Excel.
-                    </p>
+        <a href="https://ziot-systems.github.io" target="_blank" class="btn btn-outline-primary btn-sm">
+            Check it out
+        </a>
+    </section>
 
-                    <p>
-                        Built for industrial tools like gauges, scales, and sensors.
-                        Real-time data viewing and processing.
-                    </p>
+    <!-- PROJECT -->
+    <section class="section">
+        <h4 class="fw-bold mb-4">Projects</h4>
 
-                    <a href="https://jglatts.github.io/SerialWedge/" class="btn btn-outline-primary btn-sm">View Project</a>
-                </div>
-            </div>
+        <div class="bg-white rounded shadow-sm p-4">
+            <h5 class="fw-bold">SerialWedge</h5>
 
-            <!-- ZIOT -->
-            <div class="col-md-6">
-                <div class="card p-4 shadow-sm h-100">
-                    <h5 class="fw-bold">ZIoT Systems</h5>
-                    <p class="text-muted">
-                        Industrial monitoring, test hardware, and production traceability.
-                    </p>
+            <p class="text-muted">
+                Serial, RS232, and USB data capture tool
+            </p>
 
-                    <p>
-                        Devices and software that capture, validate, and log manufacturing data in real time.
-                    </p>
+            <p>
+                A Windows utility that captures data from industrial devices like gauges, scales,
+                and sensors, and sends it directly into applications like Excel.
+            </p>
 
-                    <a href="https://ziot-systems.github.io" class="btn btn-outline-primary btn-sm">View Project</a>
-                </div>
-            </div>
+            <a href="https://jglatts.github.io/SerialWedge/" target="_blank" class="btn btn-outline-primary btn-sm">
+                View Project
+            </a>
 
+            <a href="https://github.com/jglatts/SerialWedge" target="_blank" class="btn btn-outline-secondary btn-sm">
+                GitHub
+            </a>
         </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section">
+        <h4 class="fw-bold mb-4">About</h4>
+
+        <p>
+    I graduated from <a href="https://www.temple.edu" target="_blank">Temple University</a>
+    with a Computer Science degree, where I developed a strong foundation in systems, software, and problem solving.
+    </p>
+
+        <p>
+            I like building systems that actually get used — not just prototypes, but tools that run in production
+            and solve real engineering problems.
+        </p>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="text-center text-muted mb-4">
+        © 2026 John Glatts
     </div>
-</section>
 
-<!-- ABOUT -->
-<section class="section">
-    <div class="container">
-
-        <h2 class="fw-bold mb-4">About</h2>
-
-        <p>
-            I graduated from :contentReference[oaicite:0]{index=0} with a Computer Science degree.
-        </p>
-
-        <p>
-            My work focuses on solving real manufacturing problems with practical engineering —
-            combining embedded systems, automation, and software into systems that run on real production floors.
-        </p>
-
-        <p>
-            I like building things that actually get used.
-        </p>
-
-    </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="text-center py-4 text-muted">
-    © 2026 John Glatts
-</footer>
+</div>
 
 </body>
 </html>
