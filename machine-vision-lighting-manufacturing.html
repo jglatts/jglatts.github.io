@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Interfacing with the AmScope MD310C-BS</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f8fafc;
+        }
+        .container {
+            max-width: 800px;
+        }
+        h1, h2 {
+            margin-top: 30px;
+        }
+        pre {
+            background: #111;
+            color: #eee;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <h1 class="fw-bold">Interfacing with the AmScope MD310C-BS for Real Measurement Systems</h1>
+
+    <p class="text-muted">By John Glatts</p>
+
+    <p>
+        The AmScope MD310C-BS is a compact USB microscope camera that is commonly used for inspection and measurement.
+        It is inexpensive, easy to mount, and works well for building custom vision systems.
+    </p>
+
+    <p>
+        This post walks through how to actually interface with it from an engineering perspective.
+        Not just using the included software, but integrating it into real systems.
+    </p>
+
+    <h2>What You Are Actually Working With</h2>
+
+    <p>
+        At a system level, this camera is a USB video device with a CMOS sensor and a standard C-mount interface.
+        It streams video over USB and is powered directly from the host.
+    </p>
+
+    <p>
+        The key point is simple. You are not talking to a special camera API.
+        You are talking to a video stream.
+    </p>
+
+    <h2>Physical Setup</h2>
+
+    <p><b>Mounting</b></p>
+    <ul>
+        <li>C-mount into microscope or lens system</li>
+        <li>Optional reduction lens depending on field of view</li>
+    </ul>
+
+    <p><b>Lighting</b></p>
+    <ul>
+        <li>Use consistent lighting</li>
+        <li>Diffuse when possible</li>
+        <li>Avoid reflections if doing measurement</li>
+    </ul>
+
+    <p><b>Stability</b></p>
+    <ul>
+        <li>Rigid mounting is critical</li>
+        <li>Do not change focus between runs</li>
+    </ul>
+
+    <h2>Driver Reality</h2>
+
+    <p>
+        The camera typically shows up as a standard USB Video Class device.
+        This means you can access it using common tools like OpenCV or DirectShow.
+    </p>
+
+    <p>
+        You do not need vendor software for integration.
+    </p>
+
+    <h2>Accessing the Camera in Code</h2>
+
+    <p>Example using OpenCV in C#:</p>
+
+    <pre><code>
+using OpenCvSharp;
+
+var cap = new VideoCapture(0);
+
+cap.FrameWidth = 2048;
+cap.FrameHeight = 1536;
+
+Mat frame = new Mat();
+
+while (true)
+{
+    cap.Read(frame);
+
+    if (frame.Empty())
+        continue;
+
+    Cv2.ImShow("Camera", frame);
+
+    if (Cv2.WaitKey(1) == 27)
+        break;
+}
+    </code></pre>
+
+    <p>
+        You may not get full resolution and full frame rate at the same time.
+        USB bandwidth is the limiting factor.
+    </p>
+
+    <h2>Calibration</h2>
+
+    <p>
+        If you are using this for measurement, calibration is required.
+    </p>
+
+    <pre><code>
+mm_per_pixel = known_distance_mm / measured_pixels
+
+real_measurement = pixel_measurement * mm_per_pixel
+    </code></pre>
+
+    <p>
+        Lock zoom, focus, and camera position before calibrating.
+        Any change invalidates your calibration.
+    </p>
+
+    <h2>Integrating into a System</h2>
+
+    <p>
+        A typical pipeline looks like this:
+    </p>
+
+    <pre><code>
+Camera -> OpenCV -> Feature Detection -> Measurement -> Pass/Fail -> Logging
+    </code></pre>
+
+    <p>
+        This can be used for alignment checks, pitch measurement, gap detection, and inspection tasks.
+    </p>
+
+    <h2>Performance Considerations</h2>
+
+    <ul>
+        <li>Disable auto exposure for consistency</li>
+        <li>Capture frames after motion settles</li>
+        <li>Skip unstable frames when needed</li>
+    </ul>
+
+    <h2>Where It Works Well</h2>
+
+    <ul>
+        <li>Low cost inspection systems</li>
+        <li>Internal tools</li>
+        <li>Controlled environments</li>
+    </ul>
+
+    <h2>Limitations</h2>
+
+    <ul>
+        <li>USB 2.0 bandwidth limits</li>
+        <li>No hardware trigger</li>
+        <li>Not designed for deterministic timing</li>
+    </ul>
+
+    <h2>When to Upgrade</h2>
+
+    <p>
+        Consider an industrial camera if you need hardware triggering, precise timing, or higher image quality.
+    </p>
+
+    <h2>Final Thoughts</h2>
+
+    <p>
+        This camera is not a plug and play industrial solution.
+        But if you treat it as a video sensor with proper optics and calibration,
+        it becomes a very capable tool for real measurement systems.
+    </p>
+
+</div>
+
+</body>
+</html>
