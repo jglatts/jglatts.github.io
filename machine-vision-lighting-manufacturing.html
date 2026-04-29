@@ -208,8 +208,7 @@
 
             <h2>Enumerating Cameras</h2>
             <p class="prompt">type .\enumerate.cs</p>
-            <pre><code> Toupcam.DeviceV2[] arr = Toupcam.EnumV2();
-            </code></pre>
+            <pre><code> Toupcam.DeviceV2[] arr = Toupcam.EnumV2();</code></pre>
 
             <p>
                 The <code>EnumV2</code> method is a static method that returns an array of <code>Toupam.DeviceV2</code> objects.
@@ -222,18 +221,12 @@
 
             <h2>Opening Camera</h2>
             <p class="prompt">type .\open.cs</p>
-            <pre><code>// note arr is from enumerate step<br>Toupcam cam = Toupcam.Open(arr[0].id);
-            </code></pre>
-            <p>
-
-            <p>
+            <pre><code>// note arr is from enumerate step<br>Toupcam cam = Toupcam.Open(arr[0].id);</code></pre>
 
 
             <h2>Pull Mode + Callback</h2>
             <p class="prompt">type .\callback.cs</p>
-            <pre><code>
-                _cam.StartPullModeWithCallback(OnCameraEvent);
-            </code></pre>
+            <pre><code>_cam.StartPullModeWithCallback(OnCameraEvent);</code></pre>
             <p>
                 The callback is triggered whenever a new frame is available from the camera.
                 It is called in user code, so you can process the frame data directly in the callback function.
@@ -242,9 +235,7 @@
 
             <h2>OpenCV Pipeline</h2>
             <p class="prompt">Write-Output pipeline</p>
-            <pre><code>
-                Camera → OpenCV → ROI → Edge → Measure → Pass/Fail
-            </code></pre>
+            <pre><code>Camera → OpenCV → ROI → Edge → Measure → Pass/Fail</code></pre>
 
 
             <h2>Why It Matters</h2>
