@@ -171,7 +171,7 @@
                 A serial keyboard wedge is one of those tools that <i>sounds boring until you need it</i>.
                 <br>
                 Then it becomes the difference between fighting with copy/paste all day and having
-                production data flow exactly where it needs to go.
+                production data exactly where it needs to go.
             </p>
 
             <p>
@@ -189,7 +189,7 @@
 
             <p>
                 I work around a lot of manufacturing equipment. Some devices have modern APIs.
-                Plenty do not. They just spit out serial data and expect you to deal with it.
+                Plenty do not. <strong>They just spit out serial data and expect you to deal with it</strong>.
             </p>
 
             <p>
@@ -227,12 +227,13 @@
             <h2>Serial Port Settings Matter</h2>
 
             <p>
-                One of the biggest gotchas with serial devices is that the COM settings have to match.
+                <strong>One of the biggest gotchas</strong> with serial devices is that the COM settings have to match.
                 If the baud rate, parity, data bits, or stop bits are wrong, the data will either be
                 garbage or will not read correctly at all.
             </p>
 
-<pre><code>Baud Rate: 9600
+<pre><code>
+Baud Rate: 9600
 Data Bits: 8
 Parity: None
 Stop Bits: One
@@ -255,7 +256,8 @@ Handshake: None</code></pre>
                 complete message is ready.
             </p>
 
-<pre><code>serialPort = new SerialPort();
+<pre><code>
+serialPort = new SerialPort();
 
 serialPort.PortName = "COM3";
 serialPort.BaudRate = 9600;
@@ -315,8 +317,12 @@ serialPort.Open();</code></pre>
                 just receives keystrokes.
             </p>
 
-<pre><code>SendKeys.SendWait(formattedValue);
-SendKeys.SendWait("{ENTER}");</code></pre>
+<pre><code>
+// this is bread and butter for a keyboard wedge. 
+// it takes the formatted value and sends it to the active window as if it were typed on the keyboard.
+SendKeys.SendWait(formattedValue);
+SendKeys.SendWait("{ENTER}");
+</code></pre>
 
             <p>
                 This is simple, but it is also powerful. It lets old equipment talk to modern workflows
@@ -330,7 +336,8 @@ SendKeys.SendWait("{ENTER}");</code></pre>
                 entered repeatedly.
             </p>
 
-<pre><code>- Digital calipers
+<pre><code>
+- Digital calipers
 - Mitutoyo-style gauges
 - Scales and balances
 - Barcode scanners
