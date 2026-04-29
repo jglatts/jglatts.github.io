@@ -168,6 +168,234 @@
         <article class="article-card">
 
             <p>
+                A serial keyboard wedge is one of those tools that sounds boring until you need it.
+                Then it becomes the difference between fighting with copy/paste all day and having
+                production data flow exactly where it needs to go.
+            </p>
+
+            <p>
+                The idea is simple: read data from a serial device, process it if needed, and send it
+                to the active Windows application as if someone typed it on a keyboard.
+            </p>
+
+            <div class="callout">
+                Scales, balances, gauges, meters, barcode scanners, sensors, and test fixtures still
+                commonly output data over RS232, USB-serial, or virtual COM ports. A keyboard wedge
+                lets that data land directly in Excel, an ERP screen, a browser form, or custom software.
+            </div>
+
+            <h2>Why I Built One</h2>
+
+            <p>
+                I work around a lot of manufacturing equipment. Some devices have modern APIs.
+                Plenty do not. They just spit out serial data and expect you to deal with it.
+            </p>
+
+            <p>
+                For quick data collection, opening a terminal window is fine. For real production use,
+                that gets old fast. Operators need the measurement to appear in the right field,
+                formatted correctly, with minimal clicking and no manual retyping.
+            </p>
+
+            <p>
+                That is where a Windows serial keyboard wedge makes sense.
+            </p>
+
+            <h2>The Basic Flow</h2>
+
+            <p>
+                The application has three main jobs:
+            </p>
+
+            <pre><code>Serial Device  ->  COM Port Reader  ->  Parser / Formatter  ->  Keyboard Output</code></pre>
+
+            <p>
+                First, the program opens a COM port using the correct serial settings. Then it listens
+                for incoming data. Once a complete message is received, the software can clean it up,
+                convert it, add units, append Enter or Tab, and finally send it to whatever application
+                currently has focus.
+            </p>
+
+            <p>
+                On Windows, that last step can be handled with keyboard simulation. In a C# WinForms
+                application, this makes the tool feel like a normal desktop utility instead of a heavy
+                industrial software package.
+            </p>
+
+            <h2>Serial Port Settings Matter</h2>
+
+            <p>
+                One of the biggest gotchas with serial devices is that the COM settings have to match.
+                If the baud rate, parity, data bits, or stop bits are wrong, the data will either be
+                garbage or will not read correctly at all.
+            </p>
+
+            <pre><code>Baud Rate: 9600
+            Data Bits: 8
+            Parity: None
+            Stop Bits: One
+            Handshake: None</code></pre>
+
+            <p>
+                Those settings are device-specific. Some instruments are simple 9600-8-N-1 devices.
+                Others use odd parity, different stop bits, hardware flow control, or custom framing.
+            </p>
+
+            <p>
+                A good wedge needs to make those settings visible and easy to change.
+            </p>
+
+            <h2>Reading From the COM Port</h2>
+
+            <p>
+                In C#, the built-in <code>SerialPort</code> class is usually enough to get started.
+                You open the port, subscribe to incoming data, and buffer the received bytes until a
+                complete message is ready.
+            </p>
+
+            <pre><code>serialPort = new SerialPort();
+
+            serialPort.PortName = "COM3";
+            serialPort.BaudRate = 9600;
+            serialPort.DataBits = 8;
+            serialPort.Parity = Parity.None;
+            serialPort.StopBits = StopBits.One;
+
+            serialPort.DataReceived += SerialPort_DataReceived;
+            serialPort.Open();</code></pre>
+
+            <p>
+                The important part is not just reading bytes. The important part is knowing when a
+                complete measurement has arrived. Some devices terminate with a carriage return.
+                Others send a fixed-length frame. Some include signs, decimal places, units, or status
+                characters.
+            </p>
+
+            <h2>Parsing the Incoming Data</h2>
+
+            <p>
+                Raw serial data is rarely exactly what you want to type into a spreadsheet.
+            </p>
+
+            <p>
+                For example, a device might send something like this:
+            </p>
+
+            <pre><code>ST,+0002.471 mm</code></pre>
+
+            <p>
+                For production use, maybe you only want:
+            </p>
+
+            <pre><code>2.471</code></pre>
+
+            <p>
+                Or maybe you want the value plus an Enter key:
+            </p>
+
+            <pre><code>2.471[ENTER]</code></pre>
+
+            <p>
+                That parsing layer is what makes the wedge useful. It can remove extra characters,
+                validate the reading, convert units, or reject bad frames before the data gets sent
+                to the active application.
+            </p>
+
+            <h2>Sending It Like Keyboard Input</h2>
+
+            <p>
+                Once the data is cleaned up, the wedge sends it to Windows as keyboard input.
+                That means the receiving program does not need to know anything about serial ports.
+            </p>
+
+            <p>
+                Excel just sees typed numbers. A web form just sees typed text. A legacy ERP screen
+                just receives keystrokes.
+            </p>
+
+            <pre><code>SendKeys.SendWait(formattedValue);
+            SendKeys.SendWait("{ENTER}");</code></pre>
+
+            <p>
+                This is simple, but it is also powerful. It lets old equipment talk to modern workflows
+                without needing custom integrations for every application.
+            </p>
+
+            <h2>Where This Helps</h2>
+
+            <p>
+                A serial keyboard wedge is useful anywhere measurements or device outputs need to be
+                entered repeatedly.
+            </p>
+
+            <pre><code>- Digital calipers
+            - Mitutoyo-style gauges
+            - Scales and balances
+            - Barcode scanners
+            - Test fixtures
+            - Multimeters
+            - Force gauges
+            - Custom Arduino or microcontroller devices
+            - PLC or RS232 equipment</code></pre>
+
+            <p>
+                In manufacturing, the value is usually not just convenience. It reduces typing errors,
+                speeds up inspection, and makes it easier to collect consistent data.
+            </p>
+
+            <h2>Making It Operator Friendly</h2>
+
+            <p>
+                The technical side is only half of the project. The other half is making the tool
+                easy to use on the floor.
+            </p>
+
+            <p>
+                Operators should be able to select the COM port, confirm the device is connected,
+                see the most recent value, and know whether the wedge is actively sending data.
+            </p>
+
+            <p>
+                A simple WinForms interface works well for this kind of utility. It launches fast,
+                runs on Windows production PCs, and does not need a browser, server, or database
+                unless the application grows into something larger.
+            </p>
+
+            <h2>What I Like About This Approach</h2>
+
+            <p>
+                A keyboard wedge is not always the most elegant integration, but it is extremely
+                practical. It works with software you do not control. It works with legacy systems.
+                It works with spreadsheets. It works with weird old Windows applications that are
+                somehow still running critical production processes.
+            </p>
+
+            <p>
+                Sometimes that is exactly what you need.
+            </p>
+
+            <div class="callout">
+                The best factory software is not always the flashiest software. Sometimes the best
+                tool is the one that quietly removes a repetitive manual step and keeps production moving.
+            </div>
+
+            <h2>Project Link</h2>
+
+            <p>
+                I have been building this as an open-source Windows utility called
+                <a href="https://github.com/jglatts/SerialWedge" target="_blank">SerialWedge</a>.
+                The project is written in C# and is meant to be a practical starting point for reading
+                serial devices and sending the data into normal Windows applications.
+            </p>
+
+            <p>
+                I also have a project page here:
+                <a href="https://jglatts.github.io/SerialWedge/" target="_blank">SerialWedge project page</a>.
+            </p>
+
+            <p>
+                It is still evolving, but the goal is straightforward: make it easier to get serial
+                device data into the places people are already working.
             </p>
 
             <p class="prompt">exit</p>
