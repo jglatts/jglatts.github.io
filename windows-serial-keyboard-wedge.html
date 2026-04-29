@@ -196,10 +196,10 @@
                 For quick data collection, opening a terminal window is fine. For real production use,
                 that gets old fast. Operators need the measurement to appear in the right field,
                 formatted correctly, with minimal clicking and no manual retyping.
-                This is also helpful when the data is needed in a spreadsheet or database that does not have a direct integration.
             </p>
 
             <p>
+                This is also helpful when the data is needed in a spreadsheet or database that does not have a direct integration.
                 That is where a Windows serial keyboard wedge makes sense.
             </p>
 
@@ -232,8 +232,7 @@
                 garbage or will not read correctly at all.
             </p>
 
-<pre><code>
-Baud Rate: 9600
+<pre><code>Baud Rate: 9600
 Data Bits: 8
 Parity: None
 Stop Bits: One
@@ -256,8 +255,7 @@ Handshake: None</code></pre>
                 complete message is ready.
             </p>
 
-<pre><code>
-serialPort = new SerialPort();
+<pre><code>serialPort = new SerialPort();
 
 serialPort.PortName = "COM3";
 serialPort.BaudRate = 9600;
@@ -317,8 +315,7 @@ serialPort.Open();</code></pre>
                 just receives keystrokes.
             </p>
 
-<pre><code>
-// this is bread and butter for a keyboard wedge. 
+<pre><code>// this is bread and butter for a keyboard wedge. 
 // it takes the formatted value and sends it to the active window as if it were typed on the keyboard.
 SendKeys.SendWait(formattedValue);
 SendKeys.SendWait("{ENTER}");
@@ -336,8 +333,7 @@ SendKeys.SendWait("{ENTER}");
                 entered repeatedly.
             </p>
 
-<pre><code>
-- Digital calipers
+<pre><code>- Digital calipers
 - Mitutoyo-style gauges
 - Scales and balances
 - Barcode scanners
