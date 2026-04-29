@@ -230,11 +230,11 @@
                 garbage or will not read correctly at all.
             </p>
 
-            <pre><code>Baud Rate: 9600
-            Data Bits: 8
-            Parity: None
-            Stop Bits: One
-            Handshake: None</code></pre>
+<pre><code>Baud Rate: 9600
+Data Bits: 8
+Parity: None
+Stop Bits: One
+Handshake: None</code></pre>
 
             <p>
                 Those settings are device-specific. Some instruments are simple 9600-8-N-1 devices.
@@ -253,16 +253,16 @@
                 complete message is ready.
             </p>
 
-            <pre><code>serialPort = new SerialPort();
+<pre><code>serialPort = new SerialPort();
 
-            serialPort.PortName = "COM3";
-            serialPort.BaudRate = 9600;
-            serialPort.DataBits = 8;
-            serialPort.Parity = Parity.None;
-            serialPort.StopBits = StopBits.One;
+serialPort.PortName = "COM3";
+serialPort.BaudRate = 9600;
+serialPort.DataBits = 8;
+serialPort.Parity = Parity.None;
+serialPort.StopBits = StopBits.One;
 
-            serialPort.DataReceived += SerialPort_DataReceived;
-            serialPort.Open();</code></pre>
+serialPort.DataReceived += SerialPort_DataReceived;
+serialPort.Open();</code></pre>
 
             <p>
                 The important part is not just reading bytes. The important part is knowing when a
@@ -313,8 +313,8 @@
                 just receives keystrokes.
             </p>
 
-            <pre><code>SendKeys.SendWait(formattedValue);
-            SendKeys.SendWait("{ENTER}");</code></pre>
+<pre><code>SendKeys.SendWait(formattedValue);
+SendKeys.SendWait("{ENTER}");</code></pre>
 
             <p>
                 This is simple, but it is also powerful. It lets old equipment talk to modern workflows
@@ -328,15 +328,15 @@
                 entered repeatedly.
             </p>
 
-            <pre><code>- Digital calipers
-            - Mitutoyo-style gauges
-            - Scales and balances
-            - Barcode scanners
-            - Test fixtures
-            - Multimeters
-            - Force gauges
-            - Custom Arduino or microcontroller devices
-            - PLC or RS232 equipment</code></pre>
+<pre><code>- Digital calipers
+- Mitutoyo-style gauges
+- Scales and balances
+- Barcode scanners
+- Test fixtures
+- Multimeters
+- Force gauges
+- Custom Arduino or microcontroller devices
+- PLC or RS232 equipment</code></pre>
 
             <p>
                 In manufacturing, the value is usually not just convenience. It reduces typing errors,
