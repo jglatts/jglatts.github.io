@@ -37,10 +37,10 @@
             text-decoration: none;
         }
 
-            a:hover {
-                color: #79c0ff;
-                text-decoration: underline;
-            }
+        a:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
 
         h1, h2, h3, h5, .fw-bold {
             color: var(--bright);
@@ -52,10 +52,10 @@
             border-top: 1px solid var(--border);
         }
 
-            h2::before {
-                content: "> ";
-                color: var(--green);
-            }
+        h2::before {
+            content: "> ";
+            color: var(--green);
+        }
 
         .text-muted {
             color: var(--muted) !important;
@@ -89,10 +89,10 @@
             letter-spacing: 0.3px;
         }
 
-            .prompt::before {
-                content: "PS C:\\> ";
-                color: var(--green);
-            }
+        .prompt::before {
+            content: "PS C:\\> ";
+            color: var(--green);
+        }
 
         .article-card {
             background: var(--panel);
@@ -126,9 +126,9 @@
             margin: 20px 0;
         }
 
-            pre code {
-                background: none;
-            }
+        pre code {
+            background: none;
+        }
 
         footer {
             border-top: 1px solid var(--border);
@@ -141,9 +141,9 @@
             color: var(--muted);
         }
 
-            .back-link:hover {
-                color: var(--bright);
-            }
+        .back-link:hover {
+            color: var(--bright);
+        }
     </style>
 </head>
 
@@ -174,6 +174,7 @@
                     AmScope MD310C-BS
                 </a>
                 is a compact 3.1MP USB camera used for inspection and measurement systems.
+                It uses a USB interface and comes with a software development kit (SDK) that includes a DLL called <code>toupcam.dll</code> for direct camera control.
             </p>
 
             <div class="callout">
@@ -185,6 +186,7 @@
 
             <p>
                 The SDK gives direct access to the camera — exposure, resolution, callbacks — not just a generic webcam feed.
+                It is quite verbose and low-level, but provides the necessary hooks for a custom machine vision application.
             </p>
 
             <h2>Project Setup</h2>
@@ -197,35 +199,48 @@
             </ul>
 
             <h2>Enumerating Cameras</h2>
-
             <p class="prompt">type .\enumerate.cs</p>
+            <pre><code>
+                Toupcam.DeviceV2[] arr = Toupcam.EnumV2();
+            </code></pre>
+            <p>
+                The <code>EnumV2</code> method is a static method that returns an array of <code>Toupam.DeviceV2</code> objects.
+                The objects contain the camera's name, type, and a unique identifier.
+                It can be helpful to print this information to the console to verify that your camera is being detected correctly before trying to open it.
+                We use the unique identifier to open the camera later on.
+            </p>
 
-<pre><code>var devices = Toupcam.EnumV2();
-</code></pre>
 
             <h2>Opening Camera</h2>
-
             <p class="prompt">type .\open.cs</p>
+            <pre><code>
+                // note arr is from enumerate step
+                Toupcam cam = Toupcam.Open(arr[0].id);
+            </code></pre>
+            <p>
 
-<pre><code>Toupcam cam = Toupcam.OpenByIndex(0);
-</code></pre>
+            <p>
+
 
             <h2>Pull Mode + Callback</h2>
-
             <p class="prompt">type .\callback.cs</p>
+            <pre><code>
+                _cam.StartPullModeWithCallback(OnCameraEvent);
+            </code></pre>
+            <p>
+                The callback is triggered whenever a new frame is available from the camera.
+                It is called in user code, so you can process the frame data directly in the callback function.
+            </p>
 
-<pre><code>_cam.StartPullModeWithCallback(OnCameraEvent);
-</code></pre>
 
             <h2>OpenCV Pipeline</h2>
-
             <p class="prompt">Write-Output pipeline</p>
+            <pre><code>
+                Camera → OpenCV → ROI → Edge → Measure → Pass/Fail
+            </code></pre>
 
-<pre><code>Camera → OpenCV → ROI → Edge → Measure → Pass/Fail
-</code></pre>
 
             <h2>Why It Matters</h2>
-
             <ul>
                 <li>Fixed lighting</li>
                 <li>Locked exposure</li>
@@ -233,16 +248,18 @@
                 <li>Calibration</li>
             </ul>
 
-            <h2>Common Issues</h2>
 
+            <h2>Common Issues</h2>
             <p><strong>DLL not found</strong> → copy next to exe</p>
             <p><strong>Camera locked</strong> → close vendor app</p>
             <p><strong>PullImage fails</strong> → check buffer/format</p>
 
-            <h2>Final Thoughts</h2>
 
+            <h2>Final Thoughts</h2>
             <p>
                 Once you can enumerate, open, and pull frames — you have the foundation for a real system.
+                Real-time processing with OpenCV can be layered on top of the camera feed to create a complete machine vision application for manufacturing inspection.
+                It is tricky to get everything working at first, but the SDK provides the necessary tools to build a custom solution that meets your specific needs.
             </p>
 
             <p class="prompt">exit</p>
