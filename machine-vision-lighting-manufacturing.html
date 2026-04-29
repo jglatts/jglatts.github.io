@@ -229,6 +229,7 @@
             <pre><code>_cam.StartPullModeWithCallback(OnCameraEvent);</code></pre>
             <p>
                 The callback is triggered whenever a new frame is available from the camera.
+                <br>
                 It is called in user code, so you can process the frame data directly in the callback function.
             </p>
 
@@ -248,7 +249,7 @@
 
 
             <h2>Common Issues</h2>
-            <p><strong>DLL not found</strong> → copy next to exe</p>
+            <p><strong>DLL not found</strong> → copy correct toupcam.dll to exe</p>
             <p><strong>Camera locked</strong> → close vendor app</p>
             <p><strong>PullImage fails</strong> → check buffer/format</p>
 
@@ -257,7 +258,8 @@
             <p>
                 Once you can enumerate, open, and pull frames — you have the foundation for a real system.
                 Real-time processing with OpenCV can be layered on top of the camera feed to create a complete machine vision application for manufacturing inspection.
-                It is tricky to get everything working at first, but the SDK provides the necessary tools to build a custom solution that meets your specific needs.
+                <br>
+                It can be tricky to get everything working at first, but the SDK provides the necessary tools to build a custom solution that meets your specific needs.
             </p>
 
             <p class="prompt">exit</p>
