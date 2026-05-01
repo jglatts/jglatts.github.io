@@ -210,17 +210,12 @@
                 First, the program opens a COM port using the correct serial settings. Then it listens
                 for incoming data. Once a complete message is received, the software can clean it up,
                 convert it, add units, append Enter or Tab, and finally send it to whatever application
-                currently has focus.
+                currently has focus. This may sound like a lot, but it is actually a pretty straightforward flow. In the next
+                write-up, I will go through each step in more detail and show how to implement it in C#.
             </p>
 
-            <p>
-                On Windows, that last step can be handled with keyboard simulation. In a C# WinForms
-                application, this makes the tool feel like a normal desktop utility instead of a heavy
-                industrial software package.
-            </p>
 
             <h2>Serial Port Settings Matter</h2>
-
             <p>
                 <strong>One of the biggest gotchas</strong> with serial devices is that the COM settings have to match.
                 If the baud rate, parity, data bits, or stop bits are wrong, the data will either be
@@ -243,7 +238,6 @@ Handshake: None</code></pre>
             </p>
 
             <h2>Reading From the COM Port</h2>
-
             <p>
                 In C#, the built-in <code>SerialPort</code> class is usually enough to get started.
                 You open the port, subscribe to incoming data, and buffer the received bytes until a
@@ -269,11 +263,9 @@ serialPort.Open();</code></pre>
             </p>
 
             <h2>Parsing the Incoming Data</h2>
-
             <p>
                 Raw serial data is rarely exactly what you want to type into a spreadsheet.
             </p>
-
             <p>
                 For example, a device might send something like this:
             </p>
