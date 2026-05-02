@@ -164,23 +164,199 @@
             <p class="text-muted mb-0">By John Glatts</p>
         </div>
 
-        <!-- ARTICLE -->
         <article class="article-card">
 
             <p>
-                Something I learned in school was always program to an <strong>interface, not an implementation. </strong>
-                <br>
-                In the case of the Serial Keyboard Wedge, the interface is the API we expsose for the serial devices.
-                This allows us to use a number of different devices without having to change the code that uses the API.
-            </p>
-            
-            <h2>The <code>SerialReaderBase</code> API</h2>
-            <p>
-                The <code>SerialReaderBase</code> class is the base class for all serial readers. It defines the API that all serial readers must implement.
-                This includes methods for starting and stopping the reader, as well as an event for when a key is read.
+                One thing that stuck with me from school was:
+                <strong>program to an interface, not an implementation.</strong>
             </p>
 
-<p class="prompt">exit</p>
+            <p>
+                That idea ended up being really useful when working on my
+                <code>SerialWedge</code> project. A keyboard wedge sounds simple at first:
+                read serial data, clean it up, and send it as keyboard input. But once you start
+                supporting different devices, the problem gets more interesting.
+            </p>
+
+            <p>
+                A scale may send data one way. A barcode scanner may send it another way.
+                A meter, gauge, caliper, or custom microcontroller may need completely different
+                parsing logic. I did not want the main application to care about all of those details.
+            </p>
+
+            <div class="callout">
+                The goal was to keep the main wedge application simple, while allowing each device
+                to define its own serial settings and data handling logic.
+            </div>
+
+            <h2>The <code>SerialReaderBase</code> API</h2>
+
+            <p>
+                In the Serial Keyboard Wedge, the interface is the API exposed through
+                <code>SerialReaderBase</code>. This base class defines the common behavior that every
+                serial reader needs to support.
+            </p>
+
+            <p>
+                The main application does not need to know if the data is coming from a scale,
+                barcode reader, gauge, sensor, or some random box with an RS232 port. It only needs
+                to know that there is a serial reader object that can start, stop, read data, and
+                report incoming values back to the UI.
+            </p>
+
+            <p>
+                That gives the project a clean separation:
+            </p>
+
+            <pre><code>Main Windows App
+    |
+    |-- SerialReaderBase
+            |
+            |-- DefaultSerialReader
+            |-- MyDeviceSerialReader
+            |-- MitutoyoSerialReader
+            |-- OtherCustomDeviceReader</code></pre>
+
+            <p>
+                Each device-specific reader can override the parts that matter, while the rest of
+                the program continues to work the same way.
+            </p>
+
+            <h2>Why This Helps</h2>
+
+            <p>
+                Without this structure, every new serial device would add more conditional logic
+                to the main form. Eventually the code would turn into a pile of device-specific
+                exceptions.
+            </p>
+
+            <p>
+                With <code>SerialReaderBase</code>, adding a new device is cleaner. I can create a new
+                class, define the port settings, write the parsing logic, and plug it into the app.
+                The UI does not need to be rewritten.
+            </p>
+
+            <h2>Device-Specific Serial Settings</h2>
+
+            <p>
+                One of the biggest headaches with serial devices is that the COM port settings
+                have to match exactly. Baud rate, parity, data bits, stop bits, and handshaking all
+                matter.
+            </p>
+
+            <p>
+                A custom serial reader can define its own default settings so the application starts
+                in a known-good configuration for that device.
+            </p>
+
+            <pre><code>public override PortSettings getPortSettings()
+{
+    return new PortSettings("XOnXOff", 2400);
+}</code></pre>
+
+            <p>
+                That may not seem like a big deal, but it makes the tool much easier to test and
+                reuse. Instead of remembering the correct settings every time, the reader class can
+                load them for you.
+            </p>
+
+            <h2>The Worker Method</h2>
+
+            <p>
+                The core of each reader is the <code>worker()</code> method. This is where the serial
+                data is read, cleaned up, parsed, and sent out as keyboard input.
+            </p>
+
+            <pre><code>public override bool worker()
+{
+    bool ret = true;
+
+    try
+    {
+        string line = port.ReadLine();
+
+        if (string.IsNullOrEmpty(line))
+            return false;
+
+        line = line.Replace("?", "");
+
+        SendKeys.SendWait(line);
+
+        updateCallback?.Invoke(line);
+    }
+    catch (TimeoutException)
+    {
+        ret = false;
+    }
+
+    return ret;
+}</code></pre>
+
+            <p>
+                This is the part that makes the wedge useful. The device can send whatever weird
+                serial format it wants, and the reader can turn that into clean keyboard input for
+                Excel, Notepad, an ERP system, or any other Windows application.
+            </p>
+
+            <h2>Adding a New Reader</h2>
+
+            <p>
+                To support a new device, I only need to create a new class that inherits from
+                <code>SerialReaderBase</code>.
+            </p>
+
+            <pre><code>class MyDeviceSerialReader : SerialReaderBase
+{
+    public MyDeviceSerialReader(SerialPort port, UpdateCallback callback)
+        : base(port, callback)
+    {
+    }
+
+    public override void initPort()
+    {
+        port.Parity = Parity.Even;
+        port.DataBits = 8;
+        port.StopBits = StopBits.One;
+        port.DtrEnable = true;
+        port.RtsEnable = false;
+    }
+
+    public override bool worker()
+    {
+        // Read and process device-specific serial data here
+        return true;
+    }
+}</code></pre>
+
+            <p>
+                Then the main form can instantiate that reader instead of the default one.
+            </p>
+
+            <pre><code>serialReader = new MyDeviceSerialReader(port, updateLiveInput);</code></pre>
+
+            <p>
+                That is the nice part. The device-specific behavior is isolated, but the rest of the
+                wedge still works the same way.
+            </p>
+
+            <h2>Final Thought</h2>
+
+            <p>
+                This project started as a simple Windows utility, but the architecture matters.
+                Industrial serial devices are all a little different, and pretending they all behave
+                the same usually leads to messy code.
+            </p>
+
+            <p>
+                By building the wedge around <code>SerialReaderBase</code>, the application stays flexible.
+                The main app handles the Windows side, and each reader handles the device side.
+            </p>
+
+            <p>
+                That makes it much easier to support new hardware without rewriting the whole tool.
+            </p>
+
+            <p class="prompt">exit</p>
 
         </article>
 
