@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Building a Lightweight ERP to Replace Access and VBA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* reuse your same styles */
+    </style>
+</head>
+
+<body>
+
+    <div class="container py-5">
+
+        <div class="terminal-box">
+            <p class="prompt">cd C:\Users\John\Projects</p>
+            <p class="prompt">notepad .\flex-test-erp.html</p>
+
+            <a href="/all-blogs.html" class="back-link">&larr; back</a>
+
+            <h1 class="fw-bold mt-3">
+                Replacing a VBA ERP with a Django-Based System
+            </h1>
+
+            <p class="text-muted mb-0">By John Glatts</p>
+        </div>
+
+        <article class="article-card">
+
+            <p>
+                I have been running a small ERP system built in Microsoft Access and VBA for years.
+                <br><br>
+                It worked. It tracked orders, generated reports, and handled day-to-day operations.
+                But like a lot of tools in manufacturing, it grew organically and started to show its age.
+            </p>
+
+            <div class="callout">
+                The goal was not to build a “perfect ERP.”
+                The goal was to replace something that already worked with something more maintainable,
+                more scalable, and easier to extend.
+            </div>
+
+            <h2>Why Move Away from Access</h2>
+
+            <p>
+                Access and VBA are incredibly productive for getting something running quickly.
+                For a single user or small team, they can go a long way.
+            </p>
+
+            <p>
+                Over time, though, a few limitations become obvious:
+            </p>
+
+<pre><code>- Hard to manage multiple users reliably
+- Difficult to version control
+- UI becomes cluttered and inconsistent
+- Integrations are limited
+- Scaling beyond a few users gets risky
+</code></pre>
+
+            <p>
+                None of these are immediate deal-breakers. But they add friction as the system grows.
+            </p>
+
+            <h2>The New Approach</h2>
+
+            <p>
+                The replacement system is built using Django, with a simple Bootstrap front-end and PostgreSQL as the database.
+            </p>
+
+<pre><code>Django (backend)
+PostgreSQL (database)
+Bootstrap (UI)
+OpenPyXL (Excel report generation)</code></pre>
+
+            <p>
+                The key idea is to keep things just as simple as the original system,
+                but move the logic into something that is easier to maintain long-term.
+            </p>
+
+            <h2>Core Features</h2>
+
+            <p>
+                The first version focuses on the essentials:
+            </p>
+
+<pre><code>- Create and edit fixture orders
+- Track status (design, production, inspection, shipped)
+- Dashboard with active orders
+- Basic metrics (monthly sales, YTD totals)
+- Generate inspection reports from Excel templates
+</code></pre>
+
+            <p>
+                That mirrors the functionality of the original VBA system almost exactly.
+            </p>
+
+            <h2>Inspection Reports</h2>
+
+            <p>
+                One important requirement was keeping the existing inspection report format.
+            </p>
+
+            <p>
+                Instead of rewriting that logic from scratch, the new system uses an Excel template
+                and fills it programmatically.
+            </p>
+
+<pre><code>Load Excel template
+Fill key cells with order data
+Return file to user</code></pre>
+
+            <p>
+                This keeps the output consistent while simplifying the code significantly.
+            </p>
+
+            <h2>What Changed (and What Didn’t)</h2>
+
+            <p>
+                The workflow is still very familiar:
+            </p>
+
+<pre><code>Create order → Track progress → Generate report</code></pre>
+
+            <p>
+                But the way it is implemented is different:
+            </p>
+
+<pre><code>Access forms → Web UI
+VBA logic → Python (Django)
+Local file → Database-backed system
+</code></pre>
+
+            <p>
+                The biggest improvement is that multiple users can now interact with the system at the same time
+                without worrying about file locking or corruption.
+            </p>
+
+            <h2>Running It Internally</h2>
+
+            <p>
+                The system runs on an internal office PC and is accessed through a browser.
+            </p>
+
+<pre><code>http://office-pc:8000</code></pre>
+
+            <p>
+                It is not exposed to the internet. Access is limited to the internal network or VPN.
+            </p>
+
+            <p>
+                This keeps things simple and secure without needing a full production deployment.
+            </p>
+
+            <h2>What I Like About This Approach</h2>
+
+            <p>
+                <strong>It keeps the spirit of the original system.</strong>
+            </p>
+
+            <p>
+                The goal was not to reinvent everything. It was to take a working workflow
+                and put it on a better foundation.
+            </p>
+
+            <div class="callout">
+                Good internal tools are not about features.
+                They are about reducing friction in everyday work.
+            </div>
+
+            <h2>Next Steps</h2>
+
+            <p>
+                There is still a lot that can be added:
+            </p>
+
+<pre><code>- User accounts and permissions
+- Inline editing (faster updates)
+- File path integration (drawings, reports)
+- Better reporting and analytics
+- Audit logging
+</code></pre>
+
+            <p>
+                But even at this stage, the system is already usable.
+            </p>
+
+            <h2>Final Thoughts</h2>
+
+            <p>
+                Rewriting internal tools can feel risky, especially when the existing system “works.”
+            </p>
+
+            <p>
+                The key is to move incrementally:
+            </p>
+
+<pre><code>Replicate → Improve → Extend</code></pre>
+
+            <p>
+                That approach keeps things grounded and avoids overengineering.
+            </p>
+
+            <p class="prompt">exit</p>
+
+        </article>
+
+        <footer class="text-center">
+            © 2026 John Glatts
+        </footer>
+
+    </div>
+
+</body>
+</html>
