@@ -1,371 +1,371 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+﻿    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Windows Serial Keyboard Wedge</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <title>Windows Serial Keyboard Wedge</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        :root {
-            --bg: #0d1117;
-            --panel: #161b22;
-            --terminal: #010409;
-            --border: #30363d;
-            --text: #c9d1d9;
-            --muted: #8b949e;
-            --bright: #f0f6fc;
-            --green: #3fb950;
-            --blue: #58a6ff;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: Consolas, Monaco, "Courier New", monospace;
-            line-height: 1.65;
-        }
-
-        .container {
-            max-width: 900px;
-        }
-
-        a {
-            color: var(--blue);
-            text-decoration: none;
-        }
-
-            a:hover {
-                color: #79c0ff;
-                text-decoration: underline;
+        <style>
+            :root {
+                --bg: #0d1117;
+                --panel: #161b22;
+                --terminal: #010409;
+                --border: #30363d;
+                --text: #c9d1d9;
+                --muted: #8b949e;
+                --bright: #f0f6fc;
+                --green: #3fb950;
+                --blue: #58a6ff;
             }
 
-        h1, h2, h3, h5, .fw-bold {
-            color: var(--bright);
-        }
-
-        h2 {
-            margin-top: 48px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-            h2::before {
-                content: "> ";
-                color: var(--green);
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: Consolas, Monaco, "Courier New", monospace;
+                line-height: 1.65;
             }
 
-        .text-muted {
-            color: var(--muted) !important;
-        }
-
-        .terminal-box {
-            background: var(--terminal);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 28px;
-            margin-bottom: 34px;
-        }
-
-        .terminal-header {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 22px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--border);
-        }
-
-        .prompt {
-            color: var(--muted);
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            letter-spacing: 0.3px;
-        }
-
-            .prompt::before {
-                content: "PS C:\\> ";
-                color: var(--green);
+            .container {
+                max-width: 900px;
             }
 
-        .article-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 30px;
-        }
-
-        .callout {
-            background: var(--terminal);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--green);
-            padding: 18px;
-            border-radius: 8px;
-            margin: 28px 0;
-        }
-
-        code {
-            color: var(--bright);
-            background: rgba(110,118,129,0.22);
-            padding: 2px 5px;
-            border-radius: 4px;
-        }
-
-        pre {
-            background: var(--terminal);
-            border: 1px solid var(--border);
-            padding: 18px;
-            border-radius: 10px;
-            overflow-x: auto;
-            margin: 20px 0;
-        }
-
-            pre code {
-                background: none;
+            a {
+                color: var(--blue);
+                text-decoration: none;
             }
 
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 24px 0;
-            margin-top: 40px;
-            color: var(--muted);
-        }
+                a:hover {
+                    color: #79c0ff;
+                    text-decoration: underline;
+                }
 
-        .back-link {
-            color: var(--muted);
-        }
-
-            .back-link:hover {
+            h1, h2, h3, h5, .fw-bold {
                 color: var(--bright);
             }
-    </style>
-</head>
 
-<body>
+            h2 {
+                margin-top: 48px;
+                padding-top: 16px;
+                border-top: 1px solid var(--border);
+            }
 
-    <div class="container py-5">
+                h2::before {
+                    content: "> ";
+                    color: var(--green);
+                }
 
-        <!-- HEADER -->
-        <div class="terminal-box">
-            <p class="prompt">cd C:\Users\John\Blog\posts</p>
-            <p class="prompt">notepad .\windows-serial-keyboard-wedge-2.html</p>
+            .text-muted {
+                color: var(--muted) !important;
+            }
 
-            <a href="/all-blogs.html" class="back-link">&larr; back</a>
+            .terminal-box {
+                background: var(--terminal);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 28px;
+                margin-bottom: 34px;
+            }
 
-            <h1 class="fw-bold mt-3">
-                Writing a Serial Keyboard Wedge for Windows Part 2
-            </h1>
+            .terminal-header {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 22px;
+            }
 
-            <p class="text-muted mb-0">By John Glatts</p>
-        </div>
+            .dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: var(--border);
+            }
 
-        <article class="article-card">
+            .prompt {
+                color: var(--muted);
+                margin-bottom: 10px;
+                font-size: 0.9rem;
+                letter-spacing: 0.3px;
+            }
 
-            <p>
-                One thing that stuck with me from school was:
-                <br>
-                <strong><i>program to an interface, not an implementation.</i></strong>
-            </p>
+                .prompt::before {
+                    content: "PS C:\\> ";
+                    color: var(--green);
+                }
 
-            <p>
-                That idea ended up being really useful when working on my
-                <code>SerialWedge</code> project. A keyboard wedge sounds simple at first:
-                read serial data, clean it up, and send it as keyboard input. But once you start
-                supporting different devices, the problem gets more interesting.
-            </p>
+            .article-card {
+                background: var(--panel);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 30px;
+            }
 
-            <p>
-                A scale may send data one way. A barcode scanner may send it another way.
-                A meter, gauge, caliper, or custom microcontroller may need completely different
-                parsing logic. I did not want the main application to care about all of those details.
-            </p>
+            .callout {
+                background: var(--terminal);
+                border: 1px solid var(--border);
+                border-left: 4px solid var(--green);
+                padding: 18px;
+                border-radius: 8px;
+                margin: 28px 0;
+            }
 
-            <div class="callout">
-                The goal was to keep the main wedge application simple, while allowing each device
-                to define its own serial settings and data handling logic.
+            code {
+                color: var(--bright);
+                background: rgba(110,118,129,0.22);
+                padding: 2px 5px;
+                border-radius: 4px;
+            }
+
+            pre {
+                background: var(--terminal);
+                border: 1px solid var(--border);
+                padding: 18px;
+                border-radius: 10px;
+                overflow-x: auto;
+                margin: 20px 0;
+            }
+
+                pre code {
+                    background: none;
+                }
+
+            footer {
+                border-top: 1px solid var(--border);
+                padding: 24px 0;
+                margin-top: 40px;
+                color: var(--muted);
+            }
+
+            .back-link {
+                color: var(--muted);
+            }
+
+                .back-link:hover {
+                    color: var(--bright);
+                }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="container py-5">
+
+            <!-- HEADER -->
+            <div class="terminal-box">
+                <p class="prompt">cd C:\Users\John\Blog\posts</p>
+                <p class="prompt">notepad .\windows-serial-keyboard-wedge-2.html</p>
+
+                <a href="/all-blogs.html" class="back-link">&larr; back</a>
+
+                <h1 class="fw-bold mt-3">
+                    Writing a Serial Keyboard Wedge for Windows Part 2
+                </h1>
+
+                <p class="text-muted mb-0">By John Glatts</p>
             </div>
 
-            <h2>The <code>SerialReaderBase</code> API</h2>
+            <article class="article-card">
 
-            <p>
-                In the Serial Keyboard Wedge, the interface is the API exposed through
-                <code>SerialReaderBase</code>. This base class defines the common behavior that every
-                serial reader needs to support.
-            </p>
+                <p>
+                    One thing that stuck with me from school was:
+                    <br>
+                    <strong><i>program to an interface, not an implementation.</i></strong>
+                </p>
 
-            <p>
-                The main application does not need to know if the data is coming from a scale,
-                barcode reader, gauge, sensor, or some random box with an RS232 port. It only needs
-                to know that there is a serial reader object that can start, stop, read data, and
-                report incoming values back to the UI.
-            </p>
+                <p>
+                    That idea ended up being really useful when working on my
+                    <code>SerialWedge</code> project. A keyboard wedge sounds simple at first:
+                    read serial data, clean it up, and send it as keyboard input. But once you start
+                    supporting different devices, the problem gets more interesting.
+                </p>
 
-            <p>
-                That gives the project a clean separation:
-            </p>
+                <p>
+                    A scale may send data one way. A barcode scanner may send it another way.
+                    A meter, gauge, caliper, or custom microcontroller may need completely different
+                    parsing logic. I did not want the main application to care about all of those details.
+                </p>
 
-            <pre><code>Main Windows App
-    |
-    |-- SerialReaderBase
-            |
-            |-- DefaultSerialReader
-            |-- MyDeviceSerialReader
-            |-- MitutoyoSerialReader
-            |-- OtherCustomDeviceReader</code></pre>
+                <div class="callout">
+                    The goal was to keep the main wedge application simple, while allowing each device
+                    to define its own serial settings and data handling logic.
+                </div>
 
-            <p>
-                Each device-specific reader can override the parts that matter, while the rest of
-                the program continues to work the same way.
-            </p>
+                <h2>The <code>SerialReaderBase</code> API</h2>
 
-            <h2>Why This Helps</h2>
+                <p>
+                    In the Serial Keyboard Wedge, the interface is the API exposed through
+                    <code>SerialReaderBase</code>. This base class defines the common behavior that every
+                    serial reader needs to support.
+                </p>
 
-            <p>
-                Without this structure, every new serial device would add more conditional logic
-                to the main form. Eventually the code would turn into a pile of device-specific
-                exceptions.
-            </p>
+                <p>
+                    The main application does not need to know if the data is coming from a scale,
+                    barcode reader, gauge, sensor, or some random box with an RS232 port. It only needs
+                    to know that there is a serial reader object that can start, stop, read data, and
+                    report incoming values back to the UI.
+                </p>
 
-            <p>
-                With <code>SerialReaderBase</code>, adding a new device is cleaner. I can create a new
-                class, define the port settings, write the parsing logic, and plug it into the app.
-                The UI does not need to be rewritten.
-            </p>
+                <p>
+                    That gives the project a clean separation:
+                </p>
 
-            <h2>Device-Specific Serial Settings</h2>
+                <pre><code>Main Windows App
+        |
+        |-- SerialReaderBase
+                |
+                |-- DefaultSerialReader
+                |-- MyDeviceSerialReader
+                |-- MitutoyoSerialReader
+                |-- OtherCustomDeviceReader</code></pre>
 
-            <p>
-                One of the biggest headaches with serial devices is that the COM port settings
-                have to match exactly. Baud rate, parity, data bits, stop bits, and handshaking all
-                matter.
-            </p>
+                <p>
+                    Each device-specific reader can override the parts that matter, while the rest of
+                    the program continues to work the same way.
+                </p>
 
-            <p>
-                A custom serial reader can define its own default settings so the application starts
-                in a known-good configuration for that device.
-            </p>
+                <h2>Why This Helps</h2>
 
-            <pre><code>public override PortSettings getPortSettings()
-{
-    return new PortSettings("XOnXOff", 2400);
-}</code></pre>
+                <p>
+                    Without this structure, every new serial device would add more conditional logic
+                    to the main form. Eventually the code would turn into a pile of device-specific
+                    exceptions.
+                </p>
 
-            <p>
-                That may not seem like a big deal, but it makes the tool much easier to test and
-                reuse. Instead of remembering the correct settings every time, the reader class can
-                load them for you.
-            </p>
+                <p>
+                    With <code>SerialReaderBase</code>, adding a new device is cleaner. I can create a new
+                    class, define the port settings, write the parsing logic, and plug it into the app.
+                    The UI does not need to be rewritten.
+                </p>
 
-            <h2>The Worker Method</h2>
+                <h2>Device-Specific Serial Settings</h2>
 
-            <p>
-                The core of each reader is the <code>worker()</code> method. This is where the serial
-                data is read, cleaned up, parsed, and sent out as keyboard input.
-            </p>
+                <p>
+                    One of the biggest headaches with serial devices is that the COM port settings
+                    have to match exactly. Baud rate, parity, data bits, stop bits, and handshaking all
+                    matter.
+                </p>
 
-            <pre><code>public override bool worker()
-{
-    bool ret = true;
+                <p>
+                    A custom serial reader can define its own default settings so the application starts
+                    in a known-good configuration for that device.
+                </p>
 
-    try
+                <pre><code>public override PortSettings getPortSettings()
     {
-        string line = port.ReadLine();
+        return new PortSettings("XOnXOff", 2400);
+    }</code></pre>
 
-        if (string.IsNullOrEmpty(line))
-            return false;
+                <p>
+                    That may not seem like a big deal, but it makes the tool much easier to test and
+                    reuse. Instead of remembering the correct settings every time, the reader class can
+                    load them for you.
+                </p>
 
-        line = line.Replace("?", "");
+                <h2>The Worker Method</h2>
 
-        SendKeys.SendWait(line);
+                <p>
+                    The core of each reader is the <code>worker()</code> method. This is where the serial
+                    data is read, cleaned up, parsed, and sent out as keyboard input.
+                </p>
 
-        updateCallback?.Invoke(line);
-    }
-    catch (TimeoutException)
+                <pre><code>public override bool worker()
     {
-        ret = false;
-    }
+        bool ret = true;
 
-    return ret;
-}</code></pre>
+        try
+        {
+            string line = port.ReadLine();
 
-            <p>
-                This is the part that makes the wedge useful. The device can send whatever weird
-                serial format it wants, and the reader can turn that into clean keyboard input for
-                Excel, Notepad, an ERP system, or any other Windows application.
-            </p>
+            if (string.IsNullOrEmpty(line))
+                return false;
 
-            <h2>Adding a New Reader</h2>
+            line = line.Replace("?", "");
 
-            <p>
-                To support a new device, I only need to create a new class that inherits from
-                <code>SerialReaderBase</code>.
-            </p>
+            SendKeys.SendWait(line);
 
-            <pre><code>class MyDeviceSerialReader : SerialReaderBase
-{
-    public MyDeviceSerialReader(SerialPort port, UpdateCallback callback)
-        : base(port, callback)
+            updateCallback?.Invoke(line);
+        }
+        catch (TimeoutException)
+        {
+            ret = false;
+        }
+
+        return ret;
+    }</code></pre>
+
+                <p>
+                    This is the part that makes the wedge useful. The device can send whatever weird
+                    serial format it wants, and the reader can turn that into clean keyboard input for
+                    Excel, Notepad, an ERP system, or any other Windows application.
+                </p>
+
+                <h2>Adding a New Reader</h2>
+
+                <p>
+                    To support a new device, I only need to create a new class that inherits from
+                    <code>SerialReaderBase</code>.
+                </p>
+
+                <pre><code>class MyDeviceSerialReader : SerialReaderBase
     {
-    }
+        public MyDeviceSerialReader(SerialPort port, UpdateCallback callback)
+            : base(port, callback)
+        {
+        }
 
-    public override void initPort()
-    {
-        port.Parity = Parity.Even;
-        port.DataBits = 8;
-        port.StopBits = StopBits.One;
-        port.DtrEnable = true;
-        port.RtsEnable = false;
-    }
+        public override void initPort()
+        {
+            port.Parity = Parity.Even;
+            port.DataBits = 8;
+            port.StopBits = StopBits.One;
+            port.DtrEnable = true;
+            port.RtsEnable = false;
+        }
 
-    public override bool worker()
-    {
-        // Read and process device-specific serial data here
-        return true;
-    }
-}</code></pre>
+        public override bool worker()
+        {
+            // Read and process device-specific serial data here
+            return true;
+        }
+    }</code></pre>
 
-            <p>
-                Then the main form can instantiate that reader instead of the default one.
-            </p>
+                <p>
+                    Then the main form can instantiate that reader instead of the default one.
+                </p>
 
-            <pre><code>serialReader = new MyDeviceSerialReader(port, updateLiveInput);</code></pre>
+                <pre><code>serialReader = new MyDeviceSerialReader(port, updateLiveInput);</code></pre>
 
-            <p>
-                That is the nice part. The device-specific behavior is isolated, but the rest of the
-                wedge still works the same way.
-            </p>
+                <p>
+                    That is the nice part. The device-specific behavior is isolated, but the rest of the
+                    wedge still works the same way.
+                </p>
 
-            <h2>Final Thought</h2>
+                <h2>Final Thought</h2>
 
-            <p>
-                This project started as a simple Windows utility, but the architecture matters.
-                Industrial serial devices are all a little different, and pretending they all behave
-                the same usually leads to messy code.
-            </p>
+                <p>
+                    This project started as a simple Windows utility, but the architecture matters.
+                    Industrial serial devices are all a little different, and pretending they all behave
+                    the same usually leads to messy code.
+                </p>
 
-            <p>
-                By building the wedge around <code>SerialReaderBase</code>, the application stays flexible.
-                The main app handles the Windows side, and each reader handles the device side.
-            </p>
+                <p>
+                    By building the wedge around <code>SerialReaderBase</code>, the application stays flexible.
+                    The main app handles the Windows side, and each reader handles the device side.
+                </p>
 
-            <p>
-                That makes it much easier to support new hardware without rewriting the whole tool.
-            </p>
+                <p>
+                    That makes it much easier to support new hardware without rewriting the whole tool.
+                </p>
 
-            <p class="prompt">exit</p>
+                <p class="prompt">exit</p>
 
-        </article>
+            </article>
 
-        <footer class="text-center">
-            � 2026 John Glatts
-        </footer>
+            <footer class="text-center">
+                � 2026 John Glatts
+            </footer>
 
-    </div>
+        </div>
 
-</body>
-</html>
+    </body>
+    </html>
