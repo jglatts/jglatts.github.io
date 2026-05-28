@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Debugging the ST75160i LCD Controller Migration</title>
+    <title>Building a New ST75160i LCD Driver</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -38,10 +37,10 @@
             text-decoration: none;
         }
 
-            a:hover {
-                color: #79c0ff;
-                text-decoration: underline;
-            }
+        a:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
 
         h1, h2, h3, h5, .fw-bold {
             color: var(--bright);
@@ -53,10 +52,10 @@
             border-top: 1px solid var(--border);
         }
 
-            h2::before {
-                content: "> ";
-                color: var(--green);
-            }
+        h2::before {
+            content: "> ";
+            color: var(--green);
+        }
 
         .text-muted {
             color: var(--muted) !important;
@@ -70,19 +69,6 @@
             margin-bottom: 34px;
         }
 
-        .terminal-header {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 22px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--border);
-        }
-
         .prompt {
             color: var(--muted);
             margin-bottom: 10px;
@@ -90,10 +76,10 @@
             letter-spacing: 0.3px;
         }
 
-            .prompt::before {
-                content: "PS C:\\> ";
-                color: var(--green);
-            }
+        .prompt::before {
+            content: "PS C:\\> ";
+            color: var(--green);
+        }
 
         .article-card {
             background: var(--panel);
@@ -127,9 +113,9 @@
             margin: 20px 0;
         }
 
-            pre code {
-                background: none;
-            }
+        pre code {
+            background: none;
+        }
 
         footer {
             border-top: 1px solid var(--border);
@@ -142,9 +128,9 @@
             color: var(--muted);
         }
 
-            .back-link:hover {
-                color: var(--bright);
-            }
+        .back-link:hover {
+            color: var(--bright);
+        }
     </style>
 </head>
 
@@ -153,67 +139,53 @@
     <div class="container py-5">
 
         <div class="terminal-box">
-
             <p class="prompt">git clone st75160i-driver</p>
             <p class="prompt">code .</p>
 
             <a href="/all-blogs.html" class="back-link">&larr; back</a>
 
             <h1 class="fw-bold mt-3">
-                Debugging an ST75160i LCD Migration
+                Building a New ST75160i LCD Driver
             </h1>
 
             <p class="text-muted mb-0">
                 By John Glatts
             </p>
-
         </div>
 
+        <article class="article-card">
 
-<h1 class="fw-bold mt-3">
-    Building a New ST75160i LCD Driver
-</h1>
+            <p>
+                After debugging the newer revision of the
+                <code>NHD-C160100DiZ-FSW-FBW</code> LCD from Newhaven Display,
+                I ended up writing a new driver for the <code>ST75160i</code> controller.
+                <br><br>
+                This started as a simple display migration.
+                It turned into a really good low-level firmware project.
+            </p>
 
-<p class="text-muted mb-0">
-    By John Glatts
-</p>
+            <h2>Why a New Driver Was Needed</h2>
 
-</div>
+            <p>
+                The older display revision used an <code>ST7528i</code> controller.
+                The newer module uses an <code>ST75160i</code>.
+            </p>
 
-<article class="article-card">
+            <p>
+                The displays look very similar, but the controllers are not firmware-compatible.
+                The initialization sequence, RAM layout, addressing, and pixel packing all needed to be handled differently.
+            </p>
 
-    <p>
-        After debugging the newer revision of the
-        <code>NHD-C160100DiZ-FSW-FBW</code> LCD from Newhaven Display,
-        I ended up writing a new driver for the <code>ST75160i</code> controller.
-        <br><br>
+            <div class="callout">
+                Same-looking LCD module. Different controller. Different driver.
+            </div>
 
-        This started as a simple display migration.
-        It turned into a really good low-level firmware project.
-    </p>
+            <h2>Getting the Display to Respond</h2>
 
-    <h2>Why a New Driver Was Needed</h2>
-
-    <p>
-        The older display revision used an <code>ST7528i</code> controller.
-        The newer module uses an <code>ST75160i</code>.
-    </p>
-
-    <p>
-        The displays look very similar, but the controllers are not firmware-compatible.
-        The initialization sequence, RAM layout, addressing, and pixel packing all needed to be handled differently.
-    </p>
-
-    <div class="callout">
-        Same-looking LCD module. Different controller. Different driver.
-    </div>
-
-    <h2>Getting the Display to Respond</h2>
-
-    <p>
-        The first step was getting clean communication over I2C.
-        A proper hardware reset pulse was required before the display would reliably ACK.
-    </p>
+            <p>
+                The first step was getting clean communication over I2C.
+                A proper hardware reset pulse was required before the display would reliably ACK.
+            </p>
 
 <pre><code>digitalWrite(rst, LOW);
 delay(20);
@@ -221,98 +193,96 @@ delay(20);
 digitalWrite(rst, HIGH);
 delay(200);</code></pre>
 
-    <p>
-        I also moved away from 5V logic during testing.
-        The ESP32 ended up being a much better fit since the display expects 3.3V logic levels.
-    </p>
+            <p>
+                I also moved away from 5V logic during testing.
+                The ESP32 ended up being a much better fit since the display expects 3.3V logic levels.
+            </p>
 
-    <h2>Writing Pixels Correctly</h2>
+            <h2>Writing Pixels Correctly</h2>
 
-    <p>
-        The biggest challenge was understanding how the ST75160i stores pixels in display RAM.
-        This controller packs vertical groups of pixels into each byte.
-    </p>
+            <p>
+                The biggest challenge was understanding how the ST75160i stores pixels in display RAM.
+                This controller packs vertical groups of pixels into each byte.
+            </p>
 
 <pre><code>0x80 = row 0
 0x40 = row 1
 0x20 = row 2
 0x10 = row 3</code></pre>
 
-    <p>
-        Once the framebuffer matched the controller's memory format,
-        the display started behaving correctly.
-        Lines, borders, and text finally rendered where they were supposed to.
-    </p>
+            <p>
+                Once the framebuffer matched the controller's memory format,
+                the display started behaving correctly.
+                Lines, borders, and text finally rendered where they were supposed to.
+            </p>
 
-    <h2>Orientation Fixes</h2>
+            <h2>Orientation Fixes</h2>
 
-    <p>
-        After the pixels were working, the next issue was orientation.
-        The display was upside down and mirrored at first.
-    </p>
+            <p>
+                After the pixels were working, the next issue was orientation.
+                The display was upside down and mirrored at first.
+            </p>
 
-    <p>
-        Fixing that required adjusting the coordinate mapping in the driver.
-        Once the X and Y logic matched the physical LCD layout,
-        the display finally felt usable.
-    </p>
+            <p>
+                Fixing that required adjusting the coordinate mapping in the driver.
+                Once the X and Y logic matched the physical LCD layout,
+                the display finally felt usable.
+            </p>
 
-    <h2>Adding a Demo</h2>
+            <h2>Adding a Demo</h2>
 
-    <p>
-        After the basic graphics were working,
-        I added a small demo to show the display running through our FlexibleTest FFC interposer setup.
-    </p>
+            <p>
+                After the basic graphics were working,
+                I added a small demo to show the display running through our FlexibleTest FFC interposer setup.
+            </p>
 
-    <p>
-        The demo displays names, simple graphics, and animated test screens.
-        It is a fun way to show that the driver, display, and interposer connection are all working together.
-    </p>
+            <p>
+                The demo displays names, simple graphics, and animated test screens.
+                It is a fun way to show that the driver, display, and interposer connection are all working together.
+            </p>
 
-    <div class="callout">
-        This was a great example of using a real product demo to validate both the hardware interface and the firmware.
-    </div>
+            <div class="callout">
+                This was a great example of using a real product demo to validate both the hardware interface and the firmware.
+            </div>
 
-    <h2>What I Learned</h2>
+            <h2>What I Learned</h2>
 
-    <p>
-        This project was a good reminder that datasheets matter.
-        A lot.
-    </p>
+            <p>
+                This project was a good reminder that datasheets matter. A lot.
+            </p>
 
-    <p>
-        Writing the driver forced me to understand:
-    </p>
+            <p>
+                Writing the driver forced me to understand:
+            </p>
 
-    <ul>
-        <li>I2C communication timing</li>
-        <li>LCD reset behavior</li>
-        <li>Controller initialization</li>
-        <li>Framebuffer packing</li>
-        <li>Pixel addressing</li>
-        <li>Display orientation</li>
-    </ul>
+            <ul>
+                <li>I2C communication timing</li>
+                <li>LCD reset behavior</li>
+                <li>Controller initialization</li>
+                <li>Framebuffer packing</li>
+                <li>Pixel addressing</li>
+                <li>Display orientation</li>
+            </ul>
 
-    <p>
-        It was also a nice reminder that the fundamentals still matter.
-        Reading the datasheet, testing one thing at a time, and verifying each layer made the difference.
-    </p>
+            <p>
+                It was also a nice reminder that the fundamentals still matter.
+                Reading the datasheet, testing one thing at a time, and verifying each layer made the difference.
+            </p>
 
-    <h2>Final Result</h2>
+            <h2>Final Result</h2>
 
-    <p>
-        The new ST75160i driver is now working.
-        Pixels render correctly, text is readable, and the display runs through the demo cleanly.
-    </p>
+            <p>
+                The new ST75160i driver is now working.
+                Pixels render correctly, text is readable, and the display runs through the demo cleanly.
+            </p>
 
-    <p>
-        This was a small project on the surface,
-        but it ended up being a really useful embedded systems exercise.
-        It also made the final demo feel a lot better because the driver is now something I actually understand from the datasheet up.
-    </p>
+            <p>
+                This was a small project on the surface,
+                but it ended up being a really useful embedded systems exercise.
+                It also made the final demo feel a lot better because the driver is now something I actually understand from the datasheet up.
+            </p>
 
-</article>
-
+        </article>
 
         <footer class="text-center">
             2026 John Glatts
