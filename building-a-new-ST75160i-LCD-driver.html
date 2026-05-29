@@ -154,133 +154,184 @@
         </div>
 
         <article class="article-card">
+<article class="article-card">
 
-            <p>
-                After debugging the newer revision of the
-                <code>NHD-C160100DiZ-FSW-FBW</code> LCD from Newhaven Display,
-                I ended up writing a new driver for the <code>ST75160i</code> controller.
-                <br><br>
-                This started as a simple display migration.
-                It turned into a really good low-level firmware project.
-            </p>
+<p>
+    In a previous post, I covered the process of debugging a newer revision of the
+    <code>NHD-C160100DiZ-FSW-FBW</code> LCD from Newhaven Display.
+    What initially looked like a simple display replacement turned into a much deeper investigation after I discovered that the newer module had transitioned from the
+    <code>ST7528i</code> controller to the <code>ST75160i</code>.
+    <br><br>
 
-            <h2>Why a New Driver Was Needed</h2>
+    Getting the display to ACK over I2C and show recognizable pixels was only half the battle.
 
-            <p>
-                The older display revision used an <code>ST7528i</code> controller.
-                The newer module uses an <code>ST75160i</code>.
-            </p>
+    <br><br>
 
-            <p>
-                The displays look very similar, but the controllers are not firmware-compatible.
-                The initialization sequence, RAM layout, addressing, and pixel packing all needed to be handled differently.
-            </p>
+    The next step was building a proper driver.
+</p>
 
-            <div class="callout">
-                Same-looking LCD module. Different controller. Different driver.
-            </div>
+<h2>Moving Beyond Bring-Up</h2>
 
-            <h2>Getting the Display to Respond</h2>
+<p>
+    Once the display was responding reliably, I started working through the controller datasheet and implementing the functionality needed for a usable graphics library.
+</p>
 
-            <p>
-                The first step was getting clean communication over I2C.
-                A proper hardware reset pulse was required before the display would reliably ACK.
-            </p>
+<p>
+    At this point the hardware issues were mostly solved:
+</p>
 
-<pre><code>digitalWrite(rst, LOW);
-delay(20);
+<ul>
+    <li>I2C communication was stable</li>
+    <li>The display was resetting correctly</li>
+    <li>The initialization sequence was working</li>
+    <li>The LCD glass and contrast circuitry were functioning</li>
+</ul>
 
-digitalWrite(rst, HIGH);
-delay(200);</code></pre>
+<p>
+    The challenge shifted from hardware debugging to understanding how the controller actually stores and displays pixels.
+</p>
 
-            <p>
-                I also moved away from 5V logic during testing.
-                The ESP32 ended up being a much better fit since the display expects 3.3V logic levels.
-            </p>
+<h2>Understanding the Framebuffer</h2>
 
-            <h2>Writing Pixels Correctly</h2>
+<p>
+    One of the biggest differences between the ST7528i and ST75160i controllers is how display memory is organized.
+</p>
 
-            <p>
-                The biggest challenge was understanding how the ST75160i stores pixels in display RAM.
-                This controller packs vertical groups of pixels into each byte.
-            </p>
+<p>
+    The ST75160i packs groups of vertical pixels into individual bytes of RAM.
+    That means drawing a single pixel is not as simple as writing to an X,Y coordinate.
+    The driver must determine which byte contains the target pixel, modify the correct bit, and then update the framebuffer.
+</p>
 
-<pre><code>0x80 = row 0
-0x40 = row 1
-0x20 = row 2
-0x10 = row 3</code></pre>
+<div class="callout">
+    Understanding the memory architecture was the key to making the display render correctly.
+</div>
 
-            <p>
-                Once the framebuffer matched the controller's memory format,
-                the display started behaving correctly.
-                Lines, borders, and text finally rendered where they were supposed to.
-            </p>
+<p>
+    Once the framebuffer layout matched the controller's memory organization, graphics finally started behaving correctly.
+</p>
 
-            <h2>Orientation Fixes</h2>
+<p>
+    Lines appeared where they were supposed to.
+    Boxes looked like boxes.
+    Text became readable.
+</p>
 
-            <p>
-                After the pixels were working, the next issue was orientation.
-                The display was upside down and mirrored at first.
-            </p>
+<h2>Fixing Display Orientation</h2>
 
-            <p>
-                Fixing that required adjusting the coordinate mapping in the driver.
-                Once the X and Y logic matched the physical LCD layout,
-                the display finally felt usable.
-            </p>
+<p>
+    After getting pixels onto the screen, the next challenge was orientation.
+</p>
 
-            <h2>Adding a Demo</h2>
+<p>
+    The display initially appeared mirrored and upside down.
+    This is a common issue when bringing up a new LCD controller because the controller's memory layout does not always match the physical orientation of the display glass.
+</p>
 
-            <p>
-                After the basic graphics were working,
-                I added a small demo to show the display running through our FlexibleTest FFC interposer setup.
-            </p>
+<p>
+    Fixing the issue required adjusting the coordinate mapping and addressing logic inside the driver.
+    Once the X and Y calculations matched the LCD layout, everything finally lined up as expected.
+</p>
 
-            <p>
-                The demo displays names, simple graphics, and animated test screens.
-                It is a fun way to show that the driver, display, and interposer connection are all working together.
-            </p>
+<h2>Building Graphics and Text Functions</h2>
 
-            <div class="callout">
-                This was a great example of using a real product demo to validate both the hardware interface and the firmware.
-            </div>
+<p>
+    With pixel rendering working correctly, I started adding higher-level graphics functions.
+</p>
 
-            <h2>What I Learned</h2>
+<p>
+    This included:
+</p>
 
-            <p>
-                This project was a good reminder that datasheets matter. A lot.
-            </p>
+<ul>
+    <li>Pixel operations</li>
+    <li>Lines and rectangles</li>
+    <li>Bitmap rendering</li>
+    <li>Character drawing</li>
+    <li>Font support</li>
+</ul>
 
-            <p>
-                Writing the driver forced me to understand:
-            </p>
+<p>
+    Character rendering was particularly interesting because it required translating font data stored in flash memory into the framebuffer format expected by the controller.
+</p>
 
-            <ul>
-                <li>I2C communication timing</li>
-                <li>LCD reset behavior</li>
-                <li>Controller initialization</li>
-                <li>Framebuffer packing</li>
-                <li>Pixel addressing</li>
-                <li>Display orientation</li>
-            </ul>
+<p>
+    Seeing the first correctly rendered text on the display felt like a major milestone.
+</p>
 
-            <p>
-                It was also a nice reminder that the fundamentals still matter.
-                Reading the datasheet, testing one thing at a time, and verifying each layer made the difference.
-            </p>
+<h2>Creating a Demo Application</h2>
 
-            <h2>Final Result</h2>
+<p>
+    A driver never really feels finished until it runs something useful.
+</p>
 
-            <p>
-                The new ST75160i driver is now working.
-                Pixels render correctly, text is readable, and the display runs through the demo cleanly.
-            </p>
+<p>
+    To validate the implementation, I created a small demonstration application that displays text, graphics, and simple animations.
+</p>
 
-            <p>
-                This was a small project on the surface,
-                but it ended up being a really useful embedded systems exercise.
-                It also made the final demo feel a lot better because the driver is now something I actually understand from the datasheet up.
-            </p>
+<p>
+    The display is connected using one of our FlexibleTest FFC interposers, allowing quick connection and disconnection during development and testing.
+</p>
+
+<p>
+    The demo became a convenient way to verify:
+</p>
+
+<ul>
+    <li>Driver stability</li>
+    <li>Graphics rendering</li>
+    <li>Font rendering</li>
+    <li>Interposer reliability</li>
+    <li>Overall system performance</li>
+</ul>
+
+<div class="callout">
+    This ended up being a great example of hardware and firmware development working together to validate a complete system.
+</div>
+
+<h2>Lessons Learned</h2>
+
+<p>
+    Projects like this are a reminder that embedded development still rewards understanding the fundamentals.
+</p>
+
+<p>
+    The final driver was not built by guessing or copying code from the internet.
+    It came from reading the datasheet, testing assumptions, and understanding how the controller actually works.
+</p>
+
+<p>
+    Along the way I gained a deeper understanding of:
+</p>
+
+<ul>
+    <li>I2C communication</li>
+    <li>LCD controller initialization</li>
+    <li>Display memory organization</li>
+    <li>Framebuffer design</li>
+    <li>Font rendering</li>
+    <li>Coordinate mapping</li>
+</ul>
+
+<p>
+    Most importantly, I walked away with a driver that I understand from the datasheet up.
+</p>
+
+<h2>Final Result</h2>
+
+<p>
+    What started as a simple LCD migration ended up becoming a complete driver development project.
+</p>
+
+<p>
+    The ST75160i display is now rendering graphics and text correctly, running through demonstration screens, and operating through our FlexibleTest FFC interposer setup.
+</p>
+
+<p>
+    Sometimes the most valuable engineering projects start with a display that simply refuses to work.
+</p>
+
+</article>
 
         </article>
 
