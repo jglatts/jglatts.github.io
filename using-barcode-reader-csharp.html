@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Building a New ST75160i LCD Driver</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --terminal: #010409;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --muted: #8b949e;
+            --bright: #f0f6fc;
+            --green: #3fb950;
+            --blue: #58a6ff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.65;
+        }
+
+        .container {
+            max-width: 900px;
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #79c0ff;
+                text-decoration: underline;
+            }
+
+        h1, h2, h3, h5, .fw-bold {
+            color: var(--bright);
+        }
+
+        h2 {
+            margin-top: 48px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+            h2::before {
+                content: "> ";
+                color: var(--green);
+            }
+
+        .text-muted {
+            color: var(--muted) !important;
+        }
+
+        .terminal-box {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 34px;
+        }
+
+        .prompt {
+            color: var(--muted);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+        }
+
+            .prompt::before {
+                content: "PS C:\\> ";
+                color: var(--green);
+            }
+
+        .article-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .callout {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--green);
+            padding: 18px;
+            border-radius: 8px;
+            margin: 28px 0;
+        }
+
+        code {
+            color: var(--bright);
+            background: rgba(110,118,129,0.22);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+            pre code {
+                background: none;
+            }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            margin-top: 40px;
+            color: var(--muted);
+        }
+
+        .back-link {
+            color: var(--muted);
+        }
+
+            .back-link:hover {
+                color: var(--bright);
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="container py-5">
+
+        <div class="terminal-box">
+            <p class="prompt">git clone st75160i-driver</p>
+            <p class="prompt">code .</p>
+
+            <a href="/all-blogs.html" class="back-link">&larr; back</a>
+
+            <h1 class="fw-bold mt-3">
+                Building a New ST75160i LCD Driver
+            </h1>
+
+            <p class="text-muted mb-0">
+                By John Glatts
+            </p>
+        </div>
+
+        <article class="article-card">
+
+            <p>
+                In a previous post, I covered the process of debugging a newer revision of the
+                <code>NHD-C160100DiZ-FSW-FBW</code> LCD from Newhaven Display.
+                What initially looked like a simple display replacement turned into a much deeper investigation after I discovered that the newer module had transitioned from the
+                <code>ST7528i</code> controller to the <code>ST75160i</code>.
+                <br><br>
+
+                Getting the display to ACK over I2C and show recognizable pixels was only half the battle.
+
+                <br><br>
+
+                The next step was building a proper driver.
+            </p>
+
+            <h2>Moving Beyond Bring-Up</h2>
+
+            <p>
+                Once the display was responding reliably, I started working through the controller datasheet and implementing the functionality needed for a usable graphics library.
+            </p>
+
+            <p>
+                At this point the hardware issues were mostly solved:
+            </p>
+
+            <ul>
+                <li>I2C communication was stable</li>
+                <li>The display was resetting correctly</li>
+                <li>The initialization sequence was working</li>
+                <li>The LCD glass and contrast circuitry were functioning</li>
+            </ul>
+
+            <p>
+                The challenge shifted from hardware debugging to understanding how the controller actually stores and displays pixels.
+            </p>
+
+            <h2>Understanding the Framebuffer</h2>
+
+            <p>
+                One of the biggest differences between the ST7528i and ST75160i controllers is how display memory is organized.
+            </p>
+
+            <p>
+                The ST75160i packs groups of vertical pixels into individual bytes of RAM.
+                That means drawing a single pixel is not as simple as writing to an X,Y coordinate.
+                The driver must determine which byte contains the target pixel, modify the correct bit, and then update the framebuffer.
+            </p>
+
+            <div class="callout">
+                Understanding the memory architecture was the key to making the display render correctly.
+            </div>
+
+            <p>
+                Once the framebuffer layout matched the controller's memory organization, graphics finally started behaving correctly.
+            </p>
+
+            <p>
+                Lines appeared where they were supposed to.
+                Boxes looked like boxes.
+                Text became readable.
+            </p>
+
+            <h2>Fixing Display Orientation</h2>
+
+            <p>
+                After getting pixels onto the screen, the next challenge was orientation.
+            </p>
+
+            <p>
+                The display initially appeared mirrored and upside down.
+                This is a common issue when bringing up a new LCD controller because the controller's memory layout does not always match the physical orientation of the display glass.
+            </p>
+
+            <p>
+                Fixing the issue required adjusting the coordinate mapping and addressing logic inside the driver.
+                Once the X and Y calculations matched the LCD layout, everything finally lined up as expected.
+            </p>
+
+            <h2>Building Graphics and Text Functions</h2>
+
+            <p>
+                With pixel rendering working correctly, I started adding higher-level graphics functions.
+            </p>
+
+            <p>
+                This included:
+            </p>
+
+            <ul>
+                <li>Pixel operations</li>
+                <li>Lines and rectangles</li>
+                <li>Bitmap rendering</li>
+                <li>Character drawing</li>
+                <li>Font support</li>
+            </ul>
+
+            <p>
+                Character rendering was particularly interesting because it required translating font data stored in flash memory into the framebuffer format expected by the controller.
+            </p>
+
+            <p>
+                Seeing the first correctly rendered text on the display felt like a major milestone.
+            </p>
+
+            <h2>Creating a Demo Application</h2>
+
+            <p>
+                A driver never really feels finished until it runs something useful.
+            </p>
+
+            <p>
+                To validate the implementation, I created a small demonstration application that displays text, graphics, and simple animations.
+            </p>
+
+            <p>
+                The display is connected using one of our FlexibleTest FFC interposers, allowing quick connection and disconnection during development and testing.
+            </p>
+
+            <p>
+                The demo became a convenient way to verify:
+            </p>
+
+            <ul>
+                <li>Driver stability</li>
+                <li>Graphics rendering</li>
+                <li>Font rendering</li>
+                <li>Interposer reliability</li>
+                <li>Overall system performance</li>
+            </ul>
+
+            <div class="callout">
+                This ended up being a great example of hardware and firmware development working together to validate a complete system.
+            </div>
+
+            <h2>Lessons Learned</h2>
+
+            <p>
+                Projects like this are a reminder that embedded development still rewards understanding the fundamentals.
+            </p>
+
+            <p>
+                The final driver was not built by guessing or copying code from the internet.
+                It came from reading the datasheet, testing assumptions, and understanding how the controller actually works.
+            </p>
+
+            <p>
+                Along the way I gained a deeper understanding of:
+            </p>
+
+            <ul>
+                <li>I2C communication</li>
+                <li>LCD controller initialization</li>
+                <li>Display memory organization</li>
+                <li>Framebuffer design</li>
+                <li>Font rendering</li>
+                <li>Coordinate mapping</li>
+            </ul>
+
+            <p>
+                Most importantly, I walked away with a driver that I understand from the datasheet up.
+            </p>
+
+            <h2>Final Result</h2>
+
+            <p>
+                What started as a simple LCD migration ended up becoming a complete driver development project.
+            </p>
+
+            <p>
+                The ST75160i display is now rendering graphics and text correctly, running through demonstration screens, and operating through our FlexibleTest FFC interposer setup.
+            </p>
+
+            <p>
+                Sometimes the most valuable engineering projects start with a display that simply refuses to work.
+            </p>
+
+        </article>
+
+
+        <footer class="text-center">
+            2026 John Glatts
+        </footer>
+
+    </div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Building a New ST75160i LCD Driver</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --terminal: #010409;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --muted: #8b949e;
+            --bright: #f0f6fc;
+            --green: #3fb950;
+            --blue: #58a6ff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.65;
+        }
+
+        .container {
+            max-width: 900px;
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #79c0ff;
+                text-decoration: underline;
+            }
+
+        h1, h2, h3, h5, .fw-bold {
+            color: var(--bright);
+        }
+
+        h2 {
+            margin-top: 48px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+            h2::before {
+                content: "> ";
+                color: var(--green);
+            }
+
+        .text-muted {
+            color: var(--muted) !important;
+        }
+
+        .terminal-box {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 34px;
+        }
+
+        .prompt {
+            color: var(--muted);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+        }
+
+            .prompt::before {
+                content: "PS C:\\> ";
+                color: var(--green);
+            }
+
+        .article-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .callout {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--green);
+            padding: 18px;
+            border-radius: 8px;
+            margin: 28px 0;
+        }
+
+        code {
+            color: var(--bright);
+            background: rgba(110,118,129,0.22);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        pre code {
+            background: none;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            margin-top: 40px;
+            color: var(--muted);
+        }
+
+        .back-link {
+            color: var(--muted);
+        }
+
+        .back-link:hover {
+            color: var(--bright);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container py-5">
+
+        <div class="terminal-box">
+            <p class="prompt">git clone st75160i-driver</p>
+            <p class="prompt">code .</p>
+
+            <a href="/all-blogs.html" class="back-link">&larr; back</a>
+
+            <h1 class="fw-bold mt-3">
+                Using a Barcode Reader in C#
+            </h1>
+
+            <p class="text-muted mb-0">
+                By John Glatts
+            </p>
+        </div>
+
+        <article class="article-card">
+            <h2>The Simple Trick: Barcode Scanners Act Like Keyboards</h2>
+
+            <p>
+                One of the easiest ways to add barcode input to a C# application is to use a basic USB barcode scanner.
+            </p>
+
+            <p>
+                I used a cheap wired USB scanner, similar to the WoneNice USB laser barcode scanner. These scanners are nice because most of them do not require any special SDK, driver, or serial communication setup.
+            </p>
+
+            <div class="text-center my-4">
+                <img src="https://m.media-amazon.com/images/I/71XEPiTyrVL._AC_SX679_.jpg"
+                     alt="USB Laser Barcode Scanner"
+                     class="img-fluid rounded shadow"
+                     style="max-width: 420px;">
+                <p class="text-muted mt-2">
+                    A basic USB barcode scanner behaves just like a standard keyboard.
+                </p>
+            </div>
+
+            <p>
+                One of the easiest ways to add barcode input to a C# application is to use a basic USB barcode scanner.
+            </p>
+
+            <p>
+                I used a cheap wired USB scanner, similar to the WoneNice USB laser barcode scanner. These scanners are nice because most of them do not require any special SDK, driver, or serial communication setup.
+            </p>
+
+            <p>
+                To Windows, the scanner usually behaves just like a keyboard.
+            </p>
+
+            <div class="callout">
+                That means when you scan a barcode, the scanner simply “types” the barcode characters into whatever control currently has focus.
+            </div>
+
+            <h2>Why This Is Useful</h2>
+
+            <p>
+                For simple shop-floor apps, test fixtures, inventory tools, or internal utilities, this is perfect.
+            </p>
+
+            <p>
+                Instead of building a complicated barcode interface, the C# app can just listen for keystrokes.
+            </p>
+
+            <p>
+                The scanner reads a barcode, sends the characters, and the application decides what to do next.
+            </p>
+
+            <h2>Using a Prefix Character</h2>
+
+            <p>
+                A useful trick is to configure the barcode scanner to send a specific prefix character before the barcode data.
+            </p>
+
+            <p>
+                For example, the scanner could send:
+            </p>
+
+<pre><code>~123456789</code></pre>
+
+            <p>
+                In this case, the <code>~</code> character tells the application:
+            </p>
+
+            <div class="callout">
+                “A barcode scan is starting. Move focus to the barcode textbox.”
+            </div>
+
+            <p>
+                Once the program sees that special character, it can jump to the correct textbox, clear any old value, and prepare to receive the scanned barcode.
+            </p>
+
+            <h2>Basic C# WinForms Example</h2>
+
+            <p>
+                In a WinForms application, one simple way to handle this is by using the form's <code>KeyPreview</code> property.
+            </p>
+
+            <p>
+                This allows the form to see keystrokes before the active control handles them.
+            </p>
+
+<pre><code>public partial class MainForm : Form
+{
+    private bool barcodeMode = false;
+
+    public MainForm()
+    {
+        InitializeComponent();
+
+        this.KeyPreview = true;
+        this.KeyPress += MainForm_KeyPress;
+    }
+
+    private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+    {
+        // Scanner prefix character
+        if (e.KeyChar == '~')
+        {
+            barcodeMode = true;
+
+            barcodeTextBox.Focus();
+            barcodeTextBox.Clear();
+
+            // Prevent the prefix from being typed into the textbox
+            e.Handled = true;
+            return;
+        }
+
+        // Scanner suffix / Enter key
+        if (barcodeMode && e.KeyChar == (char)Keys.Enter)
+        {
+            barcodeMode = false;
+
+            ProcessBarcode(barcodeTextBox.Text);
+
+            e.Handled = true;
+            return;
+        }
+    }
+
+    private void ProcessBarcode(string barcode)
+    {
+        if (string.IsNullOrWhiteSpace(barcode))
+            return;
+
+        // Do something useful with the barcode
+        resultLabel.Text = $"Scanned barcode: {barcode}";
+    }
+}</code></pre>
+
+            <h2>How The Flow Works</h2>
+
+            <p>
+                The scanner is configured to send a prefix character before the actual barcode.
+            </p>
+
+            <p>
+                When the C# application sees that prefix, it moves focus to the barcode textbox.
+            </p>
+
+            <p>
+                The rest of the scanned barcode is then typed directly into the textbox by the scanner.
+            </p>
+
+            <p>
+                Most scanners can also be configured to send an Enter key after the scan. That gives the application a clean way to know when the barcode is complete.
+            </p>
+
+            <h2>Example Scan Sequence</h2>
+
+            <p>
+                A configured scanner might send this:
+            </p>
+
+<pre><code>~ABC12345[ENTER]</code></pre>
+
+            <p>
+                The application sees the <code>~</code>, jumps to the textbox, receives <code>ABC12345</code>, and then processes the barcode when Enter is received.
+            </p>
+
+            <h2>Why I Like This Approach</h2>
+
+            <p>
+                This method is simple, cheap, and reliable.
+            </p>
+
+            <p>
+                There is no special barcode API to learn. There is no serial port code. There is no custom USB HID driver. The scanner just acts like a keyboard.
+            </p>
+
+            <p>
+                For many internal engineering tools, that is all you need.
+            </p>
+
+            <ul>
+                <li>Plug in USB scanner</li>
+                <li>Configure prefix and suffix characters</li>
+                <li>Enable <code>KeyPreview</code> in C#</li>
+                <li>Listen for the scanner prefix</li>
+                <li>Move focus to the correct textbox</li>
+                <li>Process the barcode after Enter</li>
+            </ul>
+
+            <h2>Final Thoughts</h2>
+
+            <p>
+                Cheap USB barcode scanners are surprisingly useful for small C# applications.
+            </p>
+
+            <p>
+                Because they behave like keyboards, they can be added to a WinForms or WPF tool without much extra work.
+            </p>
+
+            <p>
+                For shop-floor software, test applications, inventory lookup tools, or quick internal utilities, this is one of those simple solutions that works better than expected.
+            </p>
+
+            <p>
+                Sometimes the best interface is not a complicated one.
+            </p>
+
+            <p>
+                Sometimes it is just a barcode scanner pretending to be a keyboard.
+            </p>
+
+
+        </article>
+
+
+        <footer class="text-center">
+            2026 John Glatts
+        </footer>
+
+    </div>
+
+</body>
+</html>
