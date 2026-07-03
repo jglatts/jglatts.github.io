@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --terminal: #010409;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --muted: #8b949e;
+            --bright: #f0f6fc;
+            --green: #3fb950;
+            --blue: #58a6ff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.65;
+        }
+
+        .container {
+            max-width: 900px;
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #79c0ff;
+                text-decoration: underline;
+            }
+
+        h1, h2, h3, h5, .fw-bold {
+            color: var(--bright);
+        }
+
+        h2 {
+            margin-top: 48px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+            h2::before {
+                content: "> ";
+                color: var(--green);
+            }
+
+        .text-muted {
+            color: var(--muted) !important;
+        }
+
+        .terminal-box {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 34px;
+        }
+
+        .prompt {
+            color: var(--muted);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+        }
+
+            .prompt::before {
+                content: "PS C:\\> ";
+                color: var(--green);
+            }
+
+        .article-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .callout {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--green);
+            padding: 18px;
+            border-radius: 8px;
+            margin: 28px 0;
+        }
+
+        code {
+            color: var(--bright);
+            background: rgba(110,118,129,0.22);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+            pre code {
+                background: none;
+            }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            margin-top: 40px;
+            color: var(--muted);
+        }
+
+        .back-link {
+            color: var(--muted);
+        }
+
+            .back-link:hover {
+                color: var(--bright);
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="container py-5">
+        </div>
+
+    <article class="article-card">
+        <div class="terminal-box">
+            <div class="prompt">cat blog.txt</div>
+
+            <h1>Building a Wi-Fi Photo Frame with an ESP32</h1>
+
+            <p class="text-muted">
+                July 2026 • ESP32 • Embedded Systems • Graphics • JavaScript
+            </p>
+
+            <p>
+                This project started as a simple test for a small 240×240 ST7789 TFT display.
+                Initially I was converting photos into C header files and compiling them directly
+                into the firmware. It worked, but every time I wanted to display a new image I had
+                to regenerate the bitmap and upload new firmware.
+            </p>
+
+            <p>
+                That quickly became tedious, so I decided to build a tiny web application that lets
+                anyone upload a picture from their browser directly to the display over Wi-Fi.
+            </p>
+        </div>
+
+            <h2>The Hardware</h2>
+
+            <p>
+                The project uses an ESP32 driving a 240×240 ST7789 IPS TFT over SPI.
+                The ESP32 also hosts a lightweight web server which serves a simple HTML page.
+            </p>
+
+            <div class="callout">
+                The goal was simple:
+                <ul>
+                    <li>No firmware updates required for new pictures.</li>
+                    <li>Upload directly from a phone or computer.</li>
+                    <li>Automatically crop and resize images.</li>
+                    <li>Display immediately.</li>
+                </ul>
+            </div>
+
+            <h2>The Browser Does the Heavy Lifting</h2>
+
+            <p>
+                Instead of asking the ESP32 to decode JPEG images, the browser performs all of the expensive work.
+                Using an HTML canvas, the selected image is:
+            </p>
+
+            <ul>
+                <li>Loaded into memory</li>
+                <li>Center cropped into a square</li>
+                <li>Resized to 240×240</li>
+                <li>Converted from RGB888 into RGB565</li>
+            </ul>
+
+            <p>
+                Once converted, the browser sends the pixel data directly to the ESP32.
+            </p>
+
+            <h2>Why RGB565?</h2>
+
+            <p>
+                Computer images normally use 24-bit RGB:
+            </p>
+
+<pre><code>
+8 bits Red
+8 bits Green
+8 bits Blue
+
+24 bits total
+</code></pre>
+
+            <p>
+                The ST7789 display instead expects RGB565:
+            </p>
+
+<pre><code>
+RRRRRGGGGGGBBBBB
+
+5 bits Red
+6 bits Green
+5 bits Blue
+</code></pre>
+
+            <p>
+                Converting colors in JavaScript dramatically reduces the amount of processing required on the ESP32.
+            </p>
+
+            <h2>Streaming the Image</h2>
+
+            <p>
+                Rather than uploading the entire image at once, the browser streams one horizontal scanline at a time.
+                Each row contains:
+            </p>
+
+<pre><code>
+240 pixels
+
+×
+
+2 bytes per pixel
+
+=
+
+480 bytes
+</code></pre>
+
+            <p>
+                The ESP32 reconstructs that single line and immediately draws it to the display.
+            </p>
+
+<pre><code>
+Browser
+
+Row 0  ─────────────► ESP32 ─► TFT
+
+Row 1  ─────────────► ESP32 ─► TFT
+
+Row 2  ─────────────► ESP32 ─► TFT
+
+...
+
+Row239 ─────────────► ESP32 ─► TFT
+</code></pre>
+
+            <h2>Minimal Memory Usage</h2>
+
+            <p>
+                One of the neat aspects of this design is that the ESP32 never stores the full image.
+                Instead, it only needs enough RAM for a single scanline:
+            </p>
+
+<pre><code>
+240 pixels
+
+×
+
+2 bytes
+
+=
+
+480 byte buffer
+</code></pre>
+
+            <p>
+                A complete 240×240 image would require over 115 KB of RAM, while this implementation only needs a
+                480 byte working buffer.
+            </p>
+
+            <h2>Handling Chunked HTTP Uploads</h2>
+
+            <p>
+                One thing I learned while building this project is that an HTTP upload isn't guaranteed to arrive
+                all at once.
+                A 480 byte scanline might arrive as several smaller packets:
+            </p>
+
+<pre><code>
+Chunk 1
+128 bytes
+
+Chunk 2
+128 bytes
+
+Chunk 3
+128 bytes
+
+Chunk 4
+96 bytes
+</code></pre>
+
+            <p>
+                The web server callback provides the current offset and total size so the firmware can reconstruct
+                the complete scanline before sending it to the display.
+                Once the line has been drawn, the same buffer is reused for the next row.
+            </p>
+
+            <h2>What's Next?</h2>
+
+            <ul>
+                <li>Store images in flash memory</li>
+                <li>Create an image gallery</li>
+                <li>Automatic slideshow mode</li>
+                <li>Touchscreen support</li>
+                <li>JPEG decoding directly on the ESP32</li>
+                <li>OTA firmware updates from the same web interface</li>
+            </ul>
+
+            <div class="callout">
+                This started as a display demo, but quickly became a fun project combining embedded firmware,
+                web development, networking, graphics processing, and a bit of computer science. It's a great
+                example of how small side projects often grow into something much more interesting than originally planned.
+            </div>
+
+        </article>
+
+
+        <footer class="text-center">
+            2026 John Glatts
+        </footer>
+
+
+</body>
+</html>
