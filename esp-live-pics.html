@@ -277,6 +277,119 @@ Row239 ─────────────► ESP32 ─► TFT
 480 byte buffer
 </code></pre>
 
+            <h2>The Browser Upload Loop</h2>
+
+            <p>
+                The browser reads the resized canvas pixel data, converts each pixel from RGB888 into RGB565,
+                and sends one 480 byte scanline at a time to the ESP32.
+            </p>
+
+<pre><code>
+async function upload(){
+  const imgData = ctx.getImageData(0,0,240,240).data;
+  statusText.innerText = "Uploading...";
+
+  for(let y = 0; y &lt; 240; y++){
+    const out = new Uint8Array(480);
+
+    for(let x = 0; x &lt; 240; x++){
+      const i = ((y * 240) + x) * 4;
+
+      const r = imgData[i] &gt;&gt; 3;
+      const g = imgData[i + 1] &gt;&gt; 2;
+      const b = imgData[i + 2] &gt;&gt; 3;
+
+      const rgb565 = (r &lt;&lt; 11) | (g &lt;&lt; 5) | b;
+
+      out[x * 2] = rgb565 &gt;&gt; 8;
+      out[x * 2 + 1] = rgb565 &amp; 255;
+    }
+
+    await fetch("/line?y=" + y, {
+      method: "POST",
+      headers: {"Content-Type":"application/octet-stream"},
+      body: out
+    });
+  }
+}
+</code></pre>
+
+            <p>
+                Each request includes the row number in the query string. The body of the request is raw binary
+                RGB565 pixel data for that single row.
+            </p>
+
+            <h2>The ESP32 Upload Handler</h2>
+
+            <p>
+                On the ESP32 side, the async web server receives the binary upload. Since HTTP data can arrive
+                in smaller chunks, the handler rebuilds the full 480 byte line before drawing it.
+            </p>
+
+<pre><code>
+void myDataUploadHandler(
+    AsyncWebServerRequest* request,
+    uint8_t* data,
+    size_t len,
+    size_t index,
+    size_t total
+) {
+    if (!request-&gt;hasParam("y")) return;
+
+    int y = request-&gt;getParam("y")-&gt;value().toInt();
+
+    if (y &lt; 0 || y &gt;= 240) return;
+    if (total != 480) return;
+
+    static uint8_t lineBytes[480];
+
+    if (index + len &lt;= 480) {
+        memcpy(lineBytes + index, data, len);
+    }
+
+    if (index + len == total) {
+        drawLineFromBytes(y, lineBytes);
+    }
+}
+</code></pre>
+
+            <p>
+                The important values are:
+            </p>
+
+            <ul>
+                <li><code>data</code> - the current chunk of received bytes</li>
+                <li><code>len</code> - how many bytes arrived in this chunk</li>
+                <li><code>index</code> - where this chunk belongs inside the upload</li>
+                <li><code>total</code> - the full expected upload size</li>
+            </ul>
+
+            <h2>Drawing the Line</h2>
+
+            <p>
+                Once a full row has been received, the ESP32 converts the raw bytes back into 16-bit RGB565
+                pixels and draws a one-pixel-tall bitmap to the display.
+            </p>
+
+<pre><code>
+uint16_t lineBuf[240];
+
+void drawLineFromBytes(int y, uint8_t* data) {
+    for (int x = 0; x &lt; 240; x++) {
+        lineBuf[x] =
+            ((uint16_t)data[x * 2] &lt;&lt; 8) |
+            data[x * 2 + 1];
+    }
+
+    tft.drawRGBBitmap(0, y, lineBuf, 240, 1);
+}
+</code></pre>
+
+            <p>
+                That means the display is updated progressively from top to bottom as the browser sends each row.
+                The ESP32 never needs to hold the full image in memory.
+            </p>
+
             <p>
                 A complete 240×240 image would require over 115 KB of RAM, while this implementation only needs a
                 480 byte working buffer.
