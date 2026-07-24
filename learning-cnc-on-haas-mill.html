@@ -1,0 +1,689 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    ```
+    <!-- SEO -->
+    <meta name="description" content="A software engineer's journey learning CNC machining on a Haas mill, including G-code, work offsets, tool offsets, dry runs, machining safety, and making the first chips.">
+    <meta name="keywords" content="Haas CNC machining, Haas mill, Haas Super Mini Mill, G-code, CNC work offsets, G58, G92, tool length offsets, manufacturing engineering, CNC machining for engineers">
+    <meta name="author" content="John Glatts">
+
+    <meta property="og:title" content="Learning CNC Machining on a Haas Mill">
+    <meta property="og:description" content="Learning G-code, offsets, setup verification, and CNC machining from the perspective of a software engineer.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://jglatts.github.io/learning-cnc-machining-haas">
+
+    <title>Learning CNC Machining on a Haas Mill</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --terminal: #010409;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --muted: #8b949e;
+            --bright: #f0f6fc;
+            --green: #3fb950;
+            --blue: #58a6ff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.65;
+        }
+
+        .container {
+            max-width: 900px;
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #79c0ff;
+                text-decoration: underline;
+            }
+
+        h1, h2, h3, h5, .fw-bold {
+            color: var(--bright);
+        }
+
+        h2 {
+            margin-top: 48px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+            h2::before {
+                content: "> ";
+                color: var(--green);
+            }
+
+        .text-muted {
+            color: var(--muted) !important;
+        }
+
+        .terminal-box {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 34px;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+
+        .prompt {
+            color: var(--muted);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+        }
+
+            .prompt::before {
+                content: "PS C:\\> ";
+                color: var(--green);
+            }
+
+        .article-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .callout {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--green);
+            padding: 18px;
+            border-radius: 8px;
+            margin: 28px 0;
+        }
+
+        code {
+            color: var(--bright);
+            background: rgba(110,118,129,0.22);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: var(--terminal);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+            pre code {
+                background: none;
+            }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            margin-top: 40px;
+            color: var(--muted);
+        }
+
+        .back-link {
+            color: var(--muted);
+        }
+
+            .back-link:hover {
+                color: var(--bright);
+            }
+    </style>
+    ```
+
+</head>
+
+<body>
+
+    ```
+    <div class="container py-5">
+
+        <!-- HEADER -->
+        <div class="terminal-box">
+            <p class="prompt">cd C:\Users\John\Blog\posts</p>
+            <p class="prompt">notepad .\learning-haas-cnc.md</p>
+
+            <a href="/all-blogs.html" class="back-link">&larr; back</a>
+
+            <h1 class="fw-bold mt-3">
+                Learning CNC Machining on a Haas Mill
+            </h1>
+
+            <p class="text-muted mb-0">By John Glatts</p>
+        </div>
+
+        <!-- ARTICLE -->
+        <article class="article-card">
+
+            <p>
+                For most of my career, I have worked as a software engineer designing manufacturing
+                automation, machine vision systems, custom electronics, test equipment, and production
+                software.
+            </p>
+
+            <p>
+                Recently, I decided to expand that skill set by learning another side of the
+                manufacturing process: CNC machining on a Haas mill.
+            </p>
+
+            <p>
+                At first, the control panel looked intimidating. There were work offsets, tool offsets,
+                coordinate systems, unfamiliar buttons, and hundreds of lines of G-code.
+            </p>
+
+            <p>
+                After studying existing programs, asking questions, running dry cycles, and making my
+                first chips, the machine began to feel much more approachable.
+            </p>
+
+            <p>
+                It was not magic.
+                <br>
+                It was another engineering system waiting to be understood.
+            </p>
+
+
+            <div class="callout">
+                <p class="prompt">Write-Output manufacturing_stack</p>
+                <code>CAD → CAM → G-Code → Haas Control → Finished Part</code>
+            </div>
+
+
+            <h2>Understanding G-Code</h2>
+
+            <p>
+                The first thing I wanted to understand was not simply which buttons to press.
+                I wanted to understand what the machine was actually reading.
+            </p>
+
+            <p>
+                A CNC program is a sequence of commands that define positioning, motion, speed,
+                tooling, offsets, and machine functions.
+            </p>
+
+            <pre><code>G90
+```
+
+G00 X2.500 Y1.250
+G01 Z-0.010 F5.0
+G01 X4.000 Y1.250 F10.0</code></pre>
+
+            ```
+            <p>
+                Reading G-code reminded me of reading low-level software.
+                Each instruction performs one specific operation.
+            </p>
+
+            <p>
+                Individually, the commands are fairly simple. Together, they control an entire
+                manufacturing process.
+            </p>
+
+            <p>
+                Once I stopped looking at the program as hundreds of unrelated lines and started
+                seeing it as a structured sequence, it became much easier to follow.
+            </p>
+
+
+            <h2>Absolute and Incremental Positioning</h2>
+
+            <p>
+                One of the first important concepts was the difference between absolute and
+                incremental positioning.
+            </p>
+
+            <ul>
+                <li><code>G90</code> uses absolute positioning</li>
+                <li><code>G91</code> uses incremental positioning</li>
+            </ul>
+
+            <p>
+                In absolute mode, the machine moves to a defined coordinate.
+                In incremental mode, it moves a specified distance from its current position.
+            </p>
+
+            <pre><code>G90
+```
+
+G00 X3.000 Y1.000
+
+G91
+G00 X0.500 Y-0.250</code></pre>
+
+            ```
+            <p>
+                Coming from a software background, I thought of this as the difference between
+                assigning a value and adding an offset to an existing value.
+            </p>
+
+            <p>
+                Once that comparison clicked, following machine movement became much easier.
+            </p>
+
+
+            <h2>Machine Coordinates and Work Coordinates</h2>
+
+            <p>
+                One of the biggest learning moments was understanding that the machine and the
+                workpiece do not necessarily share the same coordinate system.
+            </p>
+
+            <p>
+                The Haas knows where its axes are located in machine coordinates. A work offset,
+                such as <code>G54</code>, <code>G58</code>, or <code>G59</code>, tells the control
+                where the part origin is located relative to the machine.
+            </p>
+
+            <div class="callout">
+                <p class="prompt">Write-Output coordinate_transform</p>
+                <code>Machine Coordinates → Work Offset → Part Coordinates</code>
+            </div>
+
+            <p>
+                For example, our programs may use <code>G58</code> with X and Y zero located at the
+                lower-left corner of the stock and Z zero located at the top surface.
+            </p>
+
+            <pre><code>G20 G17 G40 G49 G80 G90 G94
+```
+
+G58</code></pre>
+
+            ```
+            <p>
+                Once the work offset is active, all programmed coordinates are interpreted relative
+                to that part origin.
+            </p>
+
+            <p>
+                This concept felt familiar because coordinate transformations are also common in
+                robotics, graphics, machine vision, and motion-control software.
+            </p>
+
+
+            <h2>Tool Length Offsets</h2>
+
+            <p>
+                Every cutting tool has a different physical length.
+                Instead of rewriting every program for every cutter, the Haas stores the measured
+                length of each tool in the tool offset table.
+            </p>
+
+            <pre><code>T8 M06
+```
+
+G00 G43 H08 Z2.0000</code></pre>
+
+            ```
+            <p>
+                In this example, <code>T8 M06</code> loads Tool 8.
+                The <code>G43 H08</code> command applies the corresponding positive tool length
+                compensation from offset register H08.
+            </p>
+
+            <p>
+                The program can then use meaningful Z coordinates based on the workpiece rather than
+                the raw machine position.
+            </p>
+
+            <p>
+                Understanding the relationship between the tool length offset, work offset, and machine
+                position removed much of the mystery surrounding Z-axis movement.
+            </p>
+
+
+            <h2>Touching Off the Workpiece</h2>
+
+            <p>
+                Correctly establishing the top of the workpiece is one of the most important parts
+                of a CNC setup.
+            </p>
+
+            <p>
+                In our shop, we use a touch-off device with an indicator light. The tool is carefully
+                jogged down until contact is detected, and the known height of the device is used to
+                calculate the top surface of the stock.
+            </p>
+
+            <p>
+                This process connects three important values:
+            </p>
+
+            <ul>
+                <li>The machine-coordinate position</li>
+                <li>The active tool length offset</li>
+                <li>The work-coordinate Z offset</li>
+            </ul>
+
+            <p>
+                A mistake in any one of those values can cause a tool to cut too deeply, remain above
+                the material, or move somewhere unexpected.
+            </p>
+
+            <p>
+                This is why the setup must be measured, recorded, and verified before running the
+                program.
+            </p>
+
+
+            <h2>Watch for G92</h2>
+
+            <p>
+                Another important lesson was learning about <code>G92</code>.
+            </p>
+
+            <p>
+                A G92 offset can shift the active coordinate system in addition to the selected work
+                offset. If one is left active unexpectedly, the displayed work coordinates may not
+                represent what the operator thinks they represent.
+            </p>
+
+            <pre><code>G92 Z-0.010</code></pre>
+
+            <p>
+                An unexpected G92 value can change cutting depth or positioning even when the primary
+                work offset appears correct.
+            </p>
+
+            <p>
+                Before running an unfamiliar program, it is important to check whether a G92 offset
+                is active and understand why it is being used.
+            </p>
+
+
+            <h2>Safety and Verification</h2>
+
+            <p>
+                One lesson experienced machinists emphasize repeatedly is simple:
+                slow down and verify the setup.
+            </p>
+
+            <p>
+                Before pressing Cycle Start, I now try to confirm the following:
+            </p>
+
+            <ul>
+                <li>The correct program is loaded</li>
+                <li>The correct work offset is active</li>
+                <li>The stock is located and clamped correctly</li>
+                <li>The correct tool is installed</li>
+                <li>The correct H offset is called</li>
+                <li>The tool length value is reasonable</li>
+                <li>The Z zero location matches the program comments</li>
+                <li>No unexpected G92 offset is active</li>
+                <li>Rapid moves have adequate clearance</li>
+                <li>Spindle speeds and feed rates are appropriate</li>
+            </ul>
+
+            <p>
+                A good CNC program should also begin with a safe startup line that cancels any
+                unwanted modal states left behind by a previous program.
+            </p>
+
+            <pre><code>G20 G17 G40 G49 G80 G90 G94</code></pre>
+
+            <p>
+                This establishes inch mode, the XY plane, absolute positioning, feed-per-minute mode,
+                and cancels several forms of compensation and canned cycles.
+            </p>
+
+
+            <h2>Graphics, Dry Run, and Single Block</h2>
+
+            <p>
+                The Haas control provides several tools that make it possible to verify a program
+                before committing to a full-speed cut.
+            </p>
+
+            <ul>
+                <li><strong>Graphics Mode</strong> previews the programmed toolpath</li>
+                <li><strong>Dry Run</strong> allows movement to be observed at a controlled rate</li>
+                <li><strong>Single Block</strong> pauses after each block of code</li>
+                <li><strong>Feed Hold</strong> stops controlled axis motion</li>
+            </ul>
+
+            <p>
+                These tools are especially useful when running a new program, using a new setup, or
+                reviewing code generated by CAM software.
+            </p>
+
+            <p>
+                A few minutes spent verifying the first move, first plunge, and first tool change can
+                prevent a very expensive mistake.
+            </p>
+
+
+            <h2>Making the First Chips</h2>
+
+            <p>
+                The first successful cut was incredibly satisfying.
+            </p>
+
+            <p>
+                Watching the spindle follow a toolpath that I understood, seeing the cutter remove
+                material, and measuring the resulting feature made the entire process feel real.
+            </p>
+
+            <div class="callout">
+                <p class="prompt">Write-Output machining_status</p>
+                <code>Machine Powered ✔ → Offsets Verified ✔ → Dry Run ✔ → Cycle Start ✔ → Chips Made ✔</code>
+            </div>
+
+            <p>
+                Every successful setup builds confidence.
+                Every operation adds another piece to the mental model.
+            </p>
+
+            <p>
+                Even simple exercises such as facing a blank, engraving initials, or cutting a basic
+                contour provide valuable experience with coordinates, feeds, speeds, tooling, and
+                machine control.
+            </p>
+
+
+            <h2>CAD, CAM, and the Post Processor</h2>
+
+            <p>
+                Learning CNC machining has also helped connect the full workflow between design and
+                production.
+            </p>
+
+            <p>
+                A typical machining workflow may look like this:
+            </p>
+
+            <pre><code>SolidWorks Model
+    ↓
+```
+
+CAM Operations
+↓
+Toolpaths
+↓
+Post Processor
+↓
+Haas G-Code
+↓
+Machine Setup
+↓
+Finished Part</code></pre>
+
+            ```
+            <p>
+                CAM software can generate thousands of lines of code, but the operator still needs to
+                understand the setup, coordinate system, tooling, and machine behavior.
+            </p>
+
+            <p>
+                The post processor translates the CAM toolpath into the specific G-code dialect and
+                formatting expected by the Haas control.
+            </p>
+
+            <p>
+                Even when the code is generated automatically, being able to read it remains an
+                important troubleshooting and safety skill.
+            </p>
+
+
+            <h2>Machining Makes Better Engineers</h2>
+
+            <p>
+                Learning CNC machining has already changed the way I think about mechanical design
+                and manufacturing automation.
+            </p>
+
+            <p>
+                A CAD model can look perfect on a screen while still being difficult to fixture,
+                measure, reach with a cutting tool, or produce economically.
+            </p>
+
+            <p>
+                Spending time at the machine creates a greater appreciation for:
+            </p>
+
+            <ul>
+                <li>Workholding</li>
+                <li>Tool access</li>
+                <li>Setup time</li>
+                <li>Tolerance selection</li>
+                <li>Material removal</li>
+                <li>Tool deflection</li>
+                <li>Surface finish</li>
+                <li>Inspection requirements</li>
+                <li>Operator safety</li>
+            </ul>
+
+            <p>
+                Likewise, a software background is helpful when analyzing G-code, visualizing
+                coordinate transformations, troubleshooting machine logic, and automating repetitive
+                manufacturing processes.
+            </p>
+
+            <p>
+                The disciplines reinforce one another.
+            </p>
+
+
+            <h2>Learning from Experience</h2>
+
+            <p>
+                No engineer develops entirely on their own.
+            </p>
+
+            <p>
+                Books, manuals, videos, and software are valuable, but there is no substitute for
+                learning directly from people with years of practical experience.
+            </p>
+
+            <p>
+                Experienced machinists do much more than operate equipment. They understand materials,
+                tooling, machine behavior, setup strategy, inspection, and the small details that
+                determine whether a job succeeds.
+            </p>
+
+            <p>
+                Being able to ask questions and understand not only <em>what</em> someone is doing,
+                but <em>why</em> they are doing it, has made the learning process far more valuable.
+            </p>
+
+
+            <h2>Thank You</h2>
+
+            <p>
+                I would like to sincerely thank everyone who has taken the time to teach, encourage,
+                and share their experience with me throughout my engineering career.
+            </p>
+
+            <p>
+                A special thank you to everyone at <strong>DWS</strong> for sharing their machining
+                knowledge, craftsmanship, and practical experience.
+            </p>
+
+            <p>
+                I would also like to thank <strong>Dr. LB</strong>, along with the many mentors,
+                teachers, coworkers, friends, and engineers who have offered guidance over the years.
+            </p>
+
+            <p>
+                There are simply too many people to name individually, but every lesson, conversation,
+                correction, and piece of advice has contributed to the engineer I continue to become.
+            </p>
+
+            <p>
+                I am grateful to the people who are willing to slow down, answer questions, explain
+                their process, and pass along knowledge that took years to develop.
+            </p>
+
+            <p>
+                I hope that as I continue learning, I can pass that same knowledge on to future
+                engineers and machinists.
+            </p>
+
+
+            <h2>Final Thoughts</h2>
+
+            <p>
+                Every engineer starts somewhere.
+            </p>
+
+            <p>
+                The first software application, the first circuit board, the first CAD model, and the
+                first CNC program can all feel intimidating.
+            </p>
+
+            <p>
+                With curiosity, practice, patience, and guidance from experienced people, those
+                intimidating systems gradually become useful tools.
+            </p>
+
+            <p>
+                Learning the Haas has reminded me that engineering is a lifelong process.
+                There is always another discipline to explore, another machine to understand, and
+                another problem to solve.
+            </p>
+
+            <p>
+                That is one of the things I enjoy most about engineering.
+            </p>
+
+            <p class="prompt">exit</p>
+
+        </article>
+
+        <footer class="text-center">
+            © 2026 John Glatts
+        </footer>
+
+    </div>
+    ```
+
+</body>
+</html>
