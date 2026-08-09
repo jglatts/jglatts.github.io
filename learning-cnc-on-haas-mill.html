@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    ```
     <!-- SEO -->
     <meta name="description" content="A software engineer's journey learning CNC machining on a Haas mill, including G-code, work offsets, tool offsets, dry runs, machining safety, and making the first chips.">
     <meta name="keywords" content="Haas CNC machining, Haas mill, Haas Super Mini Mill, G-code, CNC work offsets, G58, G92, tool length offsets, manufacturing engineering, CNC machining for engineers">
@@ -157,13 +156,11 @@
                 color: var(--bright);
             }
     </style>
-    ```
 
 </head>
 
 <body>
 
-    ```
     <div class="container py-5">
 
         <!-- HEADER -->
@@ -230,13 +227,11 @@
             </p>
 
             <pre><code>G90
-```
 
 G00 X2.500 Y1.250
 G01 Z-0.010 F5.0
 G01 X4.000 Y1.250 F10.0</code></pre>
 
-            ```
             <p>
                 Reading G-code reminded me of reading low-level software.
                 Each instruction performs one specific operation.
@@ -271,14 +266,12 @@ G01 X4.000 Y1.250 F10.0</code></pre>
             </p>
 
             <pre><code>G90
-```
 
 G00 X3.000 Y1.000
 
 G91
 G00 X0.500 Y-0.250</code></pre>
 
-            ```
             <p>
                 Coming from a software background, I thought of this as the difference between
                 assigning a value and adding an offset to an existing value.
@@ -313,11 +306,9 @@ G00 X0.500 Y-0.250</code></pre>
             </p>
 
             <pre><code>G20 G17 G40 G49 G80 G90 G94
-```
 
 G58</code></pre>
 
-            ```
             <p>
                 Once the work offset is active, all programmed coordinates are interpreted relative
                 to that part origin.
@@ -338,11 +329,9 @@ G58</code></pre>
             </p>
 
             <pre><code>T8 M06
-```
 
 G00 G43 H08 Z2.0000</code></pre>
 
-            ```
             <p>
                 In this example, <code>T8 M06</code> loads Tool 8.
                 The <code>G43 H08</code> command applies the corresponding positive tool length
@@ -522,7 +511,6 @@ G00 G43 H08 Z2.0000</code></pre>
 
             <pre><code>SolidWorks Model
     ↓
-```
 
 CAM Operations
 ↓
@@ -536,7 +524,6 @@ Machine Setup
 ↓
 Finished Part</code></pre>
 
-            ```
             <p>
                 CAM software can generate thousands of lines of code, but the operator still needs to
                 understand the setup, coordinate system, tooling, and machine behavior.
@@ -678,7 +665,6 @@ Finished Part</code></pre>
         </footer>
 
     </div>
-    ```
 
 </body>
 </html>

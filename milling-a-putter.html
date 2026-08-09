@@ -1,0 +1,906 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- SEO -->
+<meta name="description" content="Designing and CNC milling a custom golf putter from 6061 aluminum using Fusion 360 CAM and a Haas mill, from the first CAD model through machining and workholding.">
+<meta name="keywords" content="CNC putter, custom golf putter, milling a putter, Fusion 360 CAM, Haas CNC, Haas mill, 6061 aluminum putter, CNC machining, golf putter design, CAD CAM">
+<meta name="author" content="John Glatts">
+
+<meta property="og:title" content="Designing and Milling My First Putter">
+<meta property="og:description" content="Taking a custom golf putter from a blank CAD model through Fusion 360 CAM and CNC machining on a Haas mill.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jglatts.github.io/designing-milling-first-putter">
+
+<title>Designing and Milling My First Putter</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    :root {
+        --bg: #0d1117;
+        --panel: #161b22;
+        --terminal: #010409;
+        --border: #30363d;
+        --text: #c9d1d9;
+        --muted: #8b949e;
+        --bright: #f0f6fc;
+        --green: #3fb950;
+        --blue: #58a6ff;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: Consolas, Monaco, "Courier New", monospace;
+        line-height: 1.65;
+    }
+
+    .container {
+        max-width: 900px;
+    }
+
+    a {
+        color: var(--blue);
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #79c0ff;
+        text-decoration: underline;
+    }
+
+    h1, h2, h3, h5, .fw-bold {
+        color: var(--bright);
+    }
+
+    h2 {
+        margin-top: 48px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+    }
+
+    h2::before {
+        content: "> ";
+        color: var(--green);
+    }
+
+    .text-muted {
+        color: var(--muted) !important;
+    }
+
+    .terminal-box {
+        background: var(--terminal);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+        margin-bottom: 34px;
+    }
+
+    .terminal-header {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--border);
+    }
+
+    .prompt {
+        color: var(--muted);
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        letter-spacing: 0.3px;
+    }
+
+    .prompt::before {
+        content: "PS C:\\> ";
+        color: var(--green);
+    }
+
+    .article-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 30px;
+    }
+
+    .callout {
+        background: var(--terminal);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--green);
+        padding: 18px;
+        border-radius: 8px;
+        margin: 28px 0;
+    }
+
+    code {
+        color: var(--bright);
+        background: rgba(110,118,129,0.22);
+        padding: 2px 5px;
+        border-radius: 4px;
+    }
+
+    pre {
+        background: var(--terminal);
+        border: 1px solid var(--border);
+        padding: 18px;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin: 20px 0;
+    }
+
+    pre code {
+        background: none;
+    }
+
+    footer {
+        border-top: 1px solid var(--border);
+        padding: 24px 0;
+        margin-top: 40px;
+        color: var(--muted);
+    }
+
+    .back-link {
+        color: var(--muted);
+    }
+
+    .back-link:hover {
+        color: var(--bright);
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="terminal-box">
+        <p class="prompt">cd C:\Users\John\Blog\posts</p>
+        <p class="prompt">notepad .\first-cnc-putter.md</p>
+
+        <a href="/all-blogs.html" class="back-link">&larr; back</a>
+
+        <h1 class="fw-bold mt-3">
+            Designing and Milling My First Putter
+        </h1>
+
+        <p class="text-muted mb-0">By John Glatts</p>
+    </div>
+
+    <!-- ARTICLE -->
+    <article class="article-card">
+
+        <p>
+            For most of my engineering career, the things I design eventually become
+            physical parts.
+        </p>
+
+        <p>
+            Sometimes they are 3D printed components. Sometimes they are circuit boards,
+            test fixtures, automation systems, tooling, or production equipment.
+        </p>
+
+        <p>
+            Recently, after spending more time learning CNC machining, I wanted to try
+            something different.
+        </p>
+
+        <p>
+            I wanted to design and machine a golf putter.
+        </p>
+
+        <p>
+            Not because I needed another putter.
+        </p>
+
+        <p>
+            I wanted to see if I could take an idea from a blank CAD screen all the way
+            to a finished piece of aluminum that I could actually putt with.
+        </p>
+
+        <div class="callout">
+            <p class="prompt">Write-Output putter_project</p>
+            <code>Idea → CAD → CAM → G-Code → Haas → Putter</code>
+        </div>
+
+
+        <h2>Starting with a Blank CAD Model</h2>
+
+        <p>
+            I decided to start with a mallet-style putter.
+        </p>
+
+        <p>
+            There was no detailed manufacturing drawing to follow and no existing process.
+            The first step was simply figuring out what I wanted the putter to look like.
+        </p>
+
+        <p>
+            I modeled the first version in Fusion 360.
+        </p>
+
+        <p>
+            That meant working through the basic geometry of the head, including the overall
+            length and width, face height, sole geometry, rear profile, shaft location,
+            radii, fillets, and weight distribution.
+        </p>
+
+        <p>
+            It also meant thinking about something that becomes increasingly important
+            once you start machining your own designs:
+        </p>
+
+        <p>
+            Can this actually be manufactured?
+        </p>
+
+        <p>
+            There is a major difference between designing something that looks good in CAD
+            and designing something that can realistically be machined.
+        </p>
+
+        <p>
+            The CNC machine does not care how good the render looks.
+        </p>
+
+        <p>
+            The cutter still needs to reach the feature.
+            <br>
+            The stock still needs to be held.
+            <br>
+            And somehow, after machining the first side, the part needs to be held again.
+        </p>
+
+
+        <h2>Printing Version 1</h2>
+
+        <p>
+            Before putting a block of aluminum on the Haas, I 3D printed the first version
+            of the putter.
+        </p>
+
+        <p>
+            This was a quick way to turn the CAD model into something physical before
+            committing to the machining process.
+        </p>
+
+        <p>
+            Holding the printed part immediately showed things that were difficult to judge
+            on a computer screen.
+        </p>
+
+        <p>
+            The overall size felt different. The proportions were easier to evaluate.
+            The rear shape and face dimensions were much easier to understand once the
+            design was sitting in my hands.
+        </p>
+
+        <div class="callout">
+            <p class="prompt">Write-Output prototype_loop</p>
+            <code>CAD Model → 3D Print → Hold It → Learn Something → Revise</code>
+        </div>
+
+        <p>
+            Even though the printed version was never intended to become the finished putter,
+            it was an extremely useful prototype.
+        </p>
+
+        <p>
+            That is one of the reasons I continue to like combining additive and subtractive
+            manufacturing.
+        </p>
+
+        <p>
+            A 3D printer can turn a design into a physical object very quickly.
+        </p>
+
+        <p>
+            CNC machining forces you to think about how that object will actually be
+            manufactured.
+        </p>
+
+
+        <h2>Moving into Fusion 360 CAM</h2>
+
+        <p>
+            Once I was comfortable with the basic design, I started creating the machining
+            operations in Fusion 360.
+        </p>
+
+        <p>
+            This project also became one of my first larger attempts at using Fusion for CAM.
+        </p>
+
+        <p>
+            The workflow quickly started making sense to me because the CAD model, stock,
+            tooling, coordinate system, and machining operations all exist inside the same
+            environment.
+        </p>
+
+        <p>
+            For the first operation, the goal was to remove most of the material surrounding
+            the putter while leaving enough stock to securely hold the part.
+        </p>
+
+        <p>
+            A 3D adaptive clearing operation handled much of the bulk material removal.
+        </p>
+
+        <p>
+            Watching the simulated toolpath was interesting because the software was solving
+            a machining problem that would be extremely tedious to program manually.
+        </p>
+
+        <p>
+            Instead of writing thousands of individual machine movements, I could define
+            the model, stock, cutter, feeds, speeds, stepdowns, and machining strategy.
+        </p>
+
+        <p>
+            Fusion generated the toolpath.
+        </p>
+
+        <p>
+            The post processor then translated that toolpath into G-code that the Haas
+            could execute.
+        </p>
+
+        <div class="callout">
+            <p class="prompt">Write-Output manufacturing_pipeline</p>
+            <code>Fusion CAD → Fusion CAM → Post Processor → Haas G-Code</code>
+        </div>
+
+        <p>
+            Coming from software engineering, this workflow feels surprisingly natural.
+        </p>
+
+        <p>
+            The CAD model defines the object.
+        </p>
+
+        <p>
+            CAM defines the manufacturing strategy.
+        </p>
+
+        <p>
+            The post processor acts almost like a compiler.
+        </p>
+
+        <p>
+            And the CNC machine executes the resulting instructions.
+        </p>
+
+
+        <h2>From Simulation to Aluminum</h2>
+
+        <p>
+            Eventually there is a point where the simulation has to become real.
+        </p>
+
+        <p>
+            For the first machined version, I started with a block of 6061 aluminum.
+        </p>
+
+        <p>
+            The stock was secured to the machine, the work coordinate system was established,
+            the tools were checked, and the program was reviewed before cutting.
+        </p>
+
+        <p>
+            Then I pressed Cycle Start.
+        </p>
+
+        <p>
+            Watching the first tool begin removing material was one of the most satisfying
+            parts of the project.
+        </p>
+
+        <p>
+            A rectangular block of aluminum slowly started becoming something recognizable.
+        </p>
+
+        <p>
+            First there was a rough outline.
+            <br>
+            Then the major features became visible.
+            <br>
+            Eventually it started looking like a putter.
+        </p>
+
+        <div class="callout">
+            <p class="prompt">Write-Output machining_status</p>
+            <code>Stock ✔ → Setup ✔ → Toolpath ✔ → Cycle Start ✔ → Chips ✔</code>
+        </div>
+
+        <p>
+            There is something different about machining a design that you created yourself.
+        </p>
+
+        <p>
+            Every movement of the cutter represents a decision made earlier in CAD or CAM.
+        </p>
+
+        <p>
+            When the machine follows the expected path, it confirms that the entire chain
+            is working: design, setup, tooling, coordinates, CAM, post processing, and
+            machine control.
+        </p>
+
+
+        <h2>Workholding Became Part of the Design</h2>
+
+        <p>
+            One of the biggest lessons from the project had very little to do with the
+            actual shape of the putter.
+        </p>
+
+        <p>
+            It was workholding.
+        </p>
+
+        <p>
+            During the first operation, holding a rectangular piece of aluminum was
+            relatively straightforward.
+        </p>
+
+        <p>
+            After most of that material was removed, the problem changed.
+        </p>
+
+        <p>
+            Now I had a partially machined putter surrounded by the remaining stock.
+        </p>
+
+        <p>
+            I still needed access to additional surfaces, but I also needed a reliable
+            way to hold the part without damaging finished geometry.
+        </p>
+
+        <p>
+            That forced me to think about the second operation before the first operation
+            was finished.
+        </p>
+
+        <ul>
+            <li>Where can the clamps go?</li>
+            <li>What material needs to remain after Op 1?</li>
+            <li>Where can tabs be placed?</li>
+            <li>What surfaces will exist after the first operation?</li>
+            <li>How will the part be located for Op 2?</li>
+            <li>Where will the new work coordinate system be established?</li>
+        </ul>
+
+        <p>
+            Those questions changed the way I looked at the CAD model.
+        </p>
+
+        <p>
+            The machining setup was no longer something that happened after the design.
+        </p>
+
+        <p>
+            It became part of the design.
+        </p>
+
+
+        <h2>Tool Clearance Is Real</h2>
+
+        <p>
+            The project also provided a very practical lesson in tool clearance.
+        </p>
+
+        <p>
+            During one version of the setup, the cutter contacted a screw being used
+            for workholding.
+        </p>
+
+        <p>
+            Fortunately, the situation was stopped, but it was a good reminder of how
+            many physical objects exist inside a real CNC machine that may not exist
+            inside the CAM simulation.
+        </p>
+
+        <p>
+            The software understands the model, stock, tools, and fixtures that I define.
+        </p>
+
+        <p>
+            It does not automatically understand every screw, clamp, parallel, or piece
+            of hardware that I decide to place inside the machine.
+        </p>
+
+        <p>
+            Clamps occupy real space.
+            <br>
+            Screws occupy real space.
+            <br>
+            The cutter occupies real space.
+        </p>
+
+        <p>
+            That sounds obvious.
+        </p>
+
+        <p>
+            It becomes considerably more memorable when carbide and steel try to occupy
+            the same space.
+        </p>
+
+        <p>
+            The next revision changed the machining strategy and the screw locations
+            to provide significantly more clearance.
+        </p>
+
+        <p>
+            Every mistake adds another item to the mental checklist.
+        </p>
+
+
+        <h2>Why 6061 Aluminum?</h2>
+
+        <p>
+            For the first machined version, I chose 6061 aluminum.
+        </p>
+
+        <p>
+            It is readily available, machines well, and is a good material for learning.
+        </p>
+
+        <p>
+            More importantly, it allowed me to focus on the manufacturing process rather
+            than making the first putter unnecessarily complicated.
+        </p>
+
+        <p>
+            The goal of Version 1 was not to build the world's most advanced putter.
+        </p>
+
+        <p>
+            The goal was to complete the entire process.
+        </p>
+
+        <pre><code>Design
+↓
+
+Prototype
+↓
+Program
+↓
+Fixture
+↓
+Machine
+↓
+Measure
+↓
+Learn
+↓
+Version 2</code></pre>
+
+        <h2>CAM Changed How I Look at CAD</h2>
+
+        <p>
+            This project reinforced something I have been learning since spending more
+            time machining.
+        </p>
+
+        <p>
+            Manufacturing experience changes the way you design parts.
+        </p>
+
+        <p>
+            Before learning machining, it is easy to create a feature simply because
+            the CAD software allows it.
+        </p>
+
+        <p>
+            After standing in front of the machine, different questions start appearing
+            automatically.
+        </p>
+
+        <ul>
+            <li>Can an end mill reach this feature?</li>
+            <li>What diameter cutter will fit here?</li>
+            <li>How deep is the pocket compared with the tool diameter?</li>
+            <li>How am I going to hold the part?</li>
+            <li>Can this be machined in one setup?</li>
+            <li>What happens when the part is flipped?</li>
+            <li>Where am I going to establish the work offset?</li>
+            <li>Will the toolholder or cutter hit a clamp?</li>
+        </ul>
+
+        <p>
+            Suddenly the CAD model is not just geometry.
+        </p>
+
+        <p>
+            It is a manufacturing plan.
+        </p>
+
+
+        <h2>Software Engineering Meets Machining</h2>
+
+        <p>
+            One of my favorite parts of learning CNC machining has been discovering how
+            much of my software background transfers into it.
+        </p>
+
+        <p>
+            CAM software is incredibly complex.
+        </p>
+
+        <p>
+            It takes geometry, machining constraints, tool definitions, feeds, speeds,
+            linking moves, stock conditions, and machine configuration and turns them
+            into thousands of coordinated movements.
+        </p>
+
+        <p>
+            Eventually, those operations become instructions similar to:
+        </p>
+
+        <pre><code>G90
+
+G54
+
+T6 M06
+G00 G43 H06 Z1.0000
+
+G00 X2.500 Y1.250
+G01 Z-0.050 F5.0
+G01 X4.000 Y1.250 F12.0</code></pre>
+
+        <p>
+            The Haas then executes those instructions.
+        </p>
+
+        <p>
+            That is both the power and the danger of CNC machining.
+        </p>
+
+        <p>
+            The machine is going to follow the programmed instructions.
+        </p>
+
+        <p>
+            The engineering needs to happen before Cycle Start.
+        </p>
+
+        <p>
+            Understanding that has made me appreciate both the software running behind
+            modern manufacturing and the machinists who understand how to use it safely
+            and effectively.
+        </p>
+
+
+        <h2>Version 1 Is Supposed to Be Version 1</h2>
+
+        <p>
+            It is tempting when designing something personal to keep changing the CAD model
+            until everything is perfect.
+        </p>
+
+        <p>
+            But eventually you need to make the part.
+        </p>
+
+        <p>
+            Version 1 does not need to be perfect.
+        </p>
+
+        <p>
+            It needs to exist.
+        </p>
+
+        <p>
+            Once the first putter is machined, I can evaluate things that are much harder
+            to understand from a computer screen.
+        </p>
+
+        <ul>
+            <li>Overall head size</li>
+            <li>Weight</li>
+            <li>Balance</li>
+            <li>Appearance at address</li>
+            <li>Surface finish</li>
+            <li>Machining accessibility</li>
+            <li>Workholding strategy</li>
+            <li>Features that should change on Version 2</li>
+        </ul>
+
+        <div class="callout">
+            <p class="prompt">Write-Output engineering_loop</p>
+            <code>Design → Build → Measure → Learn → Revise</code>
+        </div>
+
+        <p>
+            Those lessons can go directly into the next design.
+        </p>
+
+        <p>
+            That is engineering.
+        </p>
+
+
+        <h2>More Than a Putter</h2>
+
+        <p>
+            At the end of the day, this project is not really about needing a new golf club.
+        </p>
+
+        <p>
+            I already have a putter.
+        </p>
+
+        <p>
+            The interesting part is being able to make one.
+        </p>
+
+        <p>
+            A few years ago, I could design software that controlled manufacturing
+            equipment.
+        </p>
+
+        <p>
+            Then I started designing more mechanical components and production tooling.
+        </p>
+
+        <p>
+            Then I started learning the Haas.
+        </p>
+
+        <p>
+            Now I can sit down at a computer, design a putter, generate the machining
+            strategy, walk into the shop, load a block of aluminum, and start turning
+            that design into a physical part.
+        </p>
+
+        <p>
+            That complete process is what makes the project exciting to me.
+        </p>
+
+
+        <h2>Engineering Is Better When You Make Things</h2>
+
+        <p>
+            One of the biggest things CNC machining has reinforced for me is how valuable
+            it is for engineers to make things.
+        </p>
+
+        <p>
+            CAD teaches geometry.
+        </p>
+
+        <p>
+            CAM teaches manufacturing strategy.
+        </p>
+
+        <p>
+            Machining teaches reality.
+        </p>
+
+        <p>
+            The cutter deflects.
+            <br>
+            The stock moves if it is not held correctly.
+            <br>
+            Tools have physical limits.
+            <br>
+            Workholding takes space.
+            <br>
+            Surface finish matters.
+            <br>
+            Measurements matter.
+        </p>
+
+        <p>
+            And sometimes the part of the project that looked easy in CAD becomes the
+            hardest part of the entire job.
+        </p>
+
+        <p>
+            Those lessons are difficult to fully appreciate from behind a computer screen.
+        </p>
+
+
+        <h2>What's Next?</h2>
+
+        <p>
+            The first mallet is only the beginning.
+        </p>
+
+        <p>
+            There are already things I want to change and other designs I want to try.
+        </p>
+
+        <p>
+            One of those is a more traditional blade-style putter.
+        </p>
+
+        <p>
+            Each version creates another opportunity to improve the CAD, CAM, workholding,
+            machining strategy, and ultimately the finished club.
+        </p>
+
+        <p>
+            That is probably what I enjoy most about this project.
+        </p>
+
+        <p>
+            There is always another iteration.
+        </p>
+
+        <p>
+            Another setup to figure out.
+            <br>
+            Another toolpath to improve.
+            <br>
+            Another piece of aluminum waiting to become something.
+        </p>
+
+        <div class="callout">
+            <p class="prompt">New-Putter -Version 2</p>
+            <code>Status: Ready for another block of aluminum.</code>
+        </div>
+
+
+        <h2>Final Thoughts</h2>
+
+        <p>
+            Designing and milling my first putter combined several things I enjoy:
+            software, CAD, CAM, manufacturing, machining, and golf.
+        </p>
+
+        <p>
+            More importantly, it gave me another opportunity to take something that
+            originally existed only on a computer screen and make it real.
+        </p>
+
+        <p>
+            The first version will not be the last.
+        </p>
+
+        <p>
+            There will be design changes, better setups, better toolpaths, and probably
+            completely different putter styles.
+        </p>
+
+        <p>
+            But the first one is important because it proves the entire process works.
+        </p>
+
+        <p>
+            Start with an idea.
+            <br>
+            Model it.
+            <br>
+            Figure out how to make it.
+            <br>
+            And make some chips.
+        </p>
+
+        <p>
+            That is one of the things I enjoy most about engineering.
+        </p>
+
+        <p class="prompt">exit</p>
+
+    </article>
+
+    <footer class="text-center">
+        © 2026 John Glatts
+    </footer>
+
+</div>
+
+</body>
+</html>
